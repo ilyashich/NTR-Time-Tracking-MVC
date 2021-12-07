@@ -175,7 +175,7 @@ namespace TimeReporter.Controllers
 
         [HttpPost]
         public ActionResult AcceptTime(string selectedMonth, int selectedYear, string selectedProject, 
-             string worker, bool isMonthSubmitted, int time, int idx)
+             string worker, int time)
         {
             string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
             
@@ -187,16 +187,7 @@ namespace TimeReporter.Controllers
                 TempData["selectedProject"] = selectedProject;
                 return RedirectToAction("Index");
             }
-            
-            if (!isMonthSubmitted)
-            {
-                TempData["Alert"] = "Can't accept because this report is not submitted";
-                TempData["selectedMonth"] = selectedMonth;
-                TempData["selectedYear"] = selectedYear;
-                TempData["selectedProject"] = selectedProject;
-                return RedirectToAction("Index");
-            }
-            
+
             RecalculateBudget(worker, selectedMonth, selectedYear, selectedProject, time);
             AcceptWorker(worker, selectedMonth, selectedYear, selectedProject, time);
             

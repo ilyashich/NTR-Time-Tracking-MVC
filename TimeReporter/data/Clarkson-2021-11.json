@@ -1,5 +1,5 @@
 {
-  "frozen": false,
+  "frozen": true,
   "entries": [
     {
       "date": "2021-11-12",
@@ -87,6 +87,10 @@
     {
       "code": "OTHER",
       "time": 110
+    },
+    {
+      "code": "Pluto-1",
+      "time": 25
     }
   ]
 }

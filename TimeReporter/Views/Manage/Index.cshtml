@@ -127,81 +127,81 @@
     </button>
 </div>
 
-@if (ViewBag.budget != null)
-{
-    <h4>
-        Current project budget: @ViewBag.budget
-    </h4>
-}
 
 @if (Model.SubmittedTime.Count > 0)
 {
-    @for (int i = 0; i < Model.ProjectWorkers.Count; ++i)
-    {
+    
 
         <fieldset style="padding:30px; border:3px solid #4238ca; background:#f6f8ff;">
-            <legend>Report</legend>
+            <legend>Reports for @Model.SelectedProject project</legend>
             <table class="table table-bordered table-hover">
                 <tr>
-                    <th scope="row">
+                    <th>
                         Worker
                     </th>
-                    <td>
-                        @Model.ProjectWorkers[i]
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
+                    <th>
                         Submitted Time
                     </th>
-                    <td>
-                        @Model.SubmittedTime[i]
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
+                    <th>
                         Is Month Submitted
                     </th>
-                    <td>
-                        @if (@Model.IsFrozen[i])
-                        {
-                            <div class="display-field">
-                                Yes
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="display-field">
-                                No
-                            </div>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
+                    <th>
                         Accepted Time
                     </th>
-                    <td>
-                        @Model.AcceptedTime[i]
-                    </td>
                 </tr>
-
+                @for (int i = 0; i < Model.ProjectWorkers.Count; ++i)
+                {
+                    <tr>
+                        <td>
+                            @Model.ProjectWorkers[i]
+                        </td>
+                        <td>
+                            @Model.SubmittedTime[i]
+                        </td>
+                        <td>
+                            @if (@Model.IsFrozen[i])
+                            {
+                                <div class="display-field">
+                                    Yes
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="display-field">
+                                    No
+                                </div>
+                            }
+                        </td>
+                        <td>
+                            @using (Html.BeginForm("AcceptTime", "Manage", FormMethod.Post))
+                            {
+                                @if (@Model.IsFrozen[i])
+                                {
+                                    @Html.TextBox("time", @Model.AcceptedTime[i], new {onchange = "show(this);", type = "number"})
+            
+                                    <input type="hidden" name="selectedMonth" value=@Model.SelectedMonth />
+                                    <input type="hidden" name="selectedYear" value=@Model.SelectedYear />
+                                    <input type="hidden" name="selectedProject" value=@Model.SelectedProject />
+                                    <input type="hidden" name="worker" value=@Model.ProjectWorkers[i] />
+                                    <button type="submit" class="btn btn-outline-primary">Save</button>
+                                }
+                                else
+                                {
+                                    @Model.AcceptedTime[i]
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
             </table>
-            @using (Html.BeginForm("AcceptTime", "Manage", FormMethod.Post))
+            @if (ViewBag.budget != null)
             {
-
-                @Html.TextBox("time", @Model.AcceptedTime[i], new {onchange = "show(this);", type = "number"})
-                
-                    <input type="hidden" name="selectedMonth" value=@Model.SelectedMonth />
-                    <input type="hidden" name="selectedYear" value=@Model.SelectedYear />
-                    <input type="hidden" name="selectedProject" value=@Model.SelectedProject />
-                    <input type="hidden" name="worker" value=@Model.ProjectWorkers[i] />
-                    <input type="hidden" name="isMonthSubmitted" value=@Model.IsFrozen[i].ToString() />
-                    <input type="hidden" name="idx" value=@i />
-                    <button type="submit" class="btn btn-outline-primary">Edit Accepted Time</button>
+                <h4>
+                    Project budget: @ViewBag.budget
+                </h4>
             }
         </fieldset>
-    }
+    
 }
 
 
