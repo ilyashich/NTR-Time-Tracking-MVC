@@ -69,7 +69,8 @@
                 @* @Html.DropDownListFor(model => model.SelectedProject, *@
                 @*     new SelectList(Model.Projects), *@
                 @*     new {@class = "selectpicker", onchange = "this.form.submit();"}) *@
-
+                <input type="hidden" name="selectedMonth" value=@Model.SelectedMonth />
+                <input type="hidden" name="selectedYear" value=@Model.SelectedYear />
             </div>
         }
     </div>

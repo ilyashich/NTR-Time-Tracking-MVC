@@ -51,14 +51,6 @@
         {
           "code": "frontend"
         }
-      ],
-      "workers": [
-        {
-          "name": "Clarkson"
-        },
-        {
-          "name": "Plant"
-        }
       ]
     },
     {
@@ -73,20 +65,6 @@
         },
         {
           "code": "frontend"
-        }
-      ],
-      "workers": [
-        {
-          "name": "Clarkson"
-        },
-        {
-          "name": "Hammond"
-        },
-        {
-          "name": "May"
-        },
-        {
-          "name": "Plant"
         }
       ]
     },
@@ -109,20 +87,6 @@
         {
           "code": "frontend"
         }
-      ],
-      "workers": [
-        {
-          "name": "Clarkson"
-        },
-        {
-          "name": "Bonham"
-        },
-        {
-          "name": "May"
-        },
-        {
-          "name": "Plant"
-        }
       ]
     },
     {
@@ -140,14 +104,6 @@
         },
         {
           "code": "backend"
-        }
-      ],
-      "workers": [
-        {
-          "name": "Plant"
-        },
-        {
-          "name": "Hammett"
         }
       ]
     },
@@ -167,17 +123,6 @@
         {
           "code": "database"
         }
-      ],
-      "workers": [
-        {
-          "name": "Plant"
-        },
-        {
-          "name": "Trujillo"
-        },
-        {
-          "name": "Bonham"
-        }
       ]
     },
     {
@@ -196,17 +141,6 @@
         {
           "code": "database"
         }
-      ],
-      "workers": [
-        {
-          "name": "Plant"
-        },
-        {
-          "name": "Clarkson"
-        },
-        {
-          "name": "Hetfield"
-        }
       ]
     },
     {
@@ -218,17 +152,6 @@
       "subactivities": [
         {
           "code": null
-        }
-      ],
-      "workers": [
-        {
-          "name": "Page"
-        },
-        {
-          "name": "Hammett"
-        },
-        {
-          "name": "May"
         }
       ]
     },
@@ -242,17 +165,6 @@
         {
           "code": "frontend"
         }
-      ],
-      "workers": [
-        {
-          "name": "Trujillo"
-        },
-        {
-          "name": "May"
-        },
-        {
-          "name": "Ulrich"
-        }
       ]
     },
     {
@@ -261,8 +173,7 @@
       "name": "Luna",
       "budget": 150,
       "active": true,
-      "subactivities": [],
-      "workers": []
+      "subactivities": []
     },
     {
       "code": "Europa-77",
@@ -273,11 +184,6 @@
       "subactivities": [
         {
           "code": "database"
-        }
-      ],
-      "workers": [
-        {
-          "name": "May"
         }
       ]
     }

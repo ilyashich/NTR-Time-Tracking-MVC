@@ -4,11 +4,6 @@ namespace TimeReporter.Models
 {
     public class Worker
     {
-        public Worker(string name)
-        {
-            Name = name;
-        }
-
         [JsonPropertyName("name")]
         public string Name { get; set; }
         

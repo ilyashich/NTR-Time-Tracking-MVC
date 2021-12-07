@@ -217,13 +217,9 @@ namespace TimeReporter.Controllers
             
             if (activity != null && !activity.GetAllSubactivities().Contains(entry.Subcode))
             {
-                data.Activities[data.Activities.IndexOf(activity)].Subactivities.Add(new Subactivity(entry.Subcode));
+                data.Activities[data.Activities.IndexOf(activity)].Subactivities.Add(new Subactivity{Code = entry.Subcode});
             }
             
-            if (activity != null && !activity.Workers.Select(worker => worker.Name).ToList().Contains(selectedSurname))
-            {
-                data.Activities[data.Activities.IndexOf(activity)].Workers.Add(new Worker(selectedSurname));
-            }
             
             JsonSerde.SaveDataChanges(data);
             JsonSerde.SaveReportChanges(report, selectedSurname, selectedDate);

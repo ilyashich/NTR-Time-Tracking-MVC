@@ -51,7 +51,7 @@ namespace TimeReporter.Controllers
             
             if (!workers.Contains(newSurname))
             {
-                data.Workers.Add(new Worker(newSurname));
+                data.Workers.Add(new Worker{Name = newSurname});
                 JsonSerde.SaveDataChanges(data);
             }
             HttpContext.Session.SetString(Worker.SessionLogin, newSurname);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +50,8 @@ namespace TimeReporter.Controllers
 
             if (activity != null)
             {
-                selectedOption.ProjectWorkers = activity.Workers.Select(worker => worker.Name).ToList();
+                selectedOption.ProjectWorkers = activity.GetAllWorkersForActivity(selectedOption.SelectedMonth, selectedOption.SelectedYear)
+                                                        .Select(worker => worker.Name).ToList();
                 ViewBag.budget = activity.Budget;
                 ViewBag.isActive = activity.Active;
             }
@@ -108,8 +110,7 @@ namespace TimeReporter.Controllers
                     Name = name,
                     Budget = budget,
                     Active = true,
-                    Subactivities = new List<Subactivity>(),
-                    Workers = new List<Worker>()
+                    Subactivities = new List<Subactivity>()
                 });
             
             JsonSerde.SaveDataChanges(data);
@@ -139,8 +140,10 @@ namespace TimeReporter.Controllers
         }
         
         [HttpPost]
-        public ActionResult SelectProject(string selectedProject)
+        public ActionResult SelectProject(string selectedMonth, int selectedYear, string selectedProject)
         {
+            TempData["selectedMonth"] = selectedMonth;
+            TempData["selectedYear"] = selectedYear;
             TempData["selectedProject"] = selectedProject;
             return RedirectToAction("Index");
         }
