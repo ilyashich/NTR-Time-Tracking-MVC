@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SysActivity = System.Diagnostics.Activity;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -17,17 +18,7 @@ namespace TimeReporter.Controllers
             
             Data data = JsonSerde.GetData();
 
-            selectedOption.Surnames = data.Workers.Select(worker => worker.Name).ToList();
-
-            if (selectedOption.Surnames.Any())
-            {
-                selectedOption.SelectedSurname = selectedOption.Surnames[0];
-            }
-
-            if (TempData["selectedSurname"] != null)
-            {
-                selectedOption.SelectedSurname = (string)TempData["selectedSurname"];
-            }
+            selectedOption.SelectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
 
             if (TempData["selectedDate"] != null)
             {
@@ -74,29 +65,20 @@ namespace TimeReporter.Controllers
         }
 
         [HttpPost]
-        public ActionResult SelectSurname(string selectedSurname, DateTime selectedDate)
+        public ActionResult SelectDate(DateTime selectedDate)
         {
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedDate"] = selectedDate;
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public ActionResult SelectDate(string selectedSurname, DateTime selectedDate)
+        public ActionResult SubmitMonth(DateTime selectedDate)
         {
-            TempData["selectedSurname"] = selectedSurname;
-            TempData["selectedDate"] = selectedDate;
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public ActionResult SubmitMonth(string selectedSurname, DateTime selectedDate)
-        {
+            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
             Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
             if (report == null)
             {
                 TempData["Alert"] = "Can't submit because report for this month doesn't exist";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
@@ -104,7 +86,6 @@ namespace TimeReporter.Controllers
             if (report.Frozen)
             {
                 TempData["Alert"] = "This month is already submitted";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
@@ -113,32 +94,32 @@ namespace TimeReporter.Controllers
             
             JsonSerde.SaveReportChanges(report, selectedSurname, selectedDate);
             TempData["Success"] = "Successfully submited month: " + selectedDate.ToString("MMMM");
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedDate"] = selectedDate;
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public ActionResult Delete(string selectedSurname, DateTime selectedDate, int deleteIdx)
+        public ActionResult Delete(DateTime selectedDate, int deleteIdx)
         { 
+            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
             Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
             if(report.Frozen ||  !IsProjectActive(report, selectedDate, deleteIdx))
             {
                 TempData["Alert"] = "Month is frozen or project is not active";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
             DeleteEntry(report, selectedSurname, selectedDate, deleteIdx);
             TempData["Success"] = "Successfully deleted entry";
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedDate"] = selectedDate;
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public ActionResult EntryModal(string selectedSurname, DateTime selectedDate, int idx)
+        public ActionResult EntryModal(DateTime selectedDate, int idx)
         {
+            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
+            
             Data data = JsonSerde.GetData();
 
             Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
@@ -164,10 +145,10 @@ namespace TimeReporter.Controllers
         }
 
         [HttpPost]
-        public ActionResult ModalAction(string selectedSurname, DateTime selectedDate, int idx,
+        public ActionResult ModalAction(DateTime selectedDate, int idx,
             string code, string subcode, int time, string description)
         {
-            
+            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
             if (JsonSerde.GetReport(selectedSurname, selectedDate) == null
                 && IsProjectActive(code)
                 && selectedDate.Month == DateTime.Now.Month
@@ -178,14 +159,12 @@ namespace TimeReporter.Controllers
             else if (selectedDate.Month != DateTime.Now.Month || selectedDate.Year != DateTime.Now.Year)
             {
                 TempData["Alert"] = "Entries can be added only to current month";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
             else if (!IsProjectActive(code))
             {
                 TempData["Alert"] = "Project " + code + " is not active";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
                 
@@ -196,7 +175,6 @@ namespace TimeReporter.Controllers
             if(report.Frozen)
             {
                 TempData["Alert"] = "Month is frozen";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
@@ -218,8 +196,7 @@ namespace TimeReporter.Controllers
             {
                 EditEntry(selectedSurname, selectedDate, entry, idx);
             }
-
-            TempData["selectedSurname"] = selectedSurname;
+            
             TempData["selectedDate"] = selectedDate;
             return RedirectToAction("Index");
         }

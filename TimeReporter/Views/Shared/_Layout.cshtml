@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -18,17 +19,29 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Activities" asp-action="Index">Activities</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Manage" asp-action="Index">Manage</a>
-                        </li>
-                    </ul>
+                   @if (Context.Session.GetString(Worker.SessionLogin) != null)
+                   {
+                       <ul class="navbar-nav flex-grow-1">
+                           <li class="nav-item">
+                               <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Home</a>
+                           </li>
+                           <li class="nav-item">
+                               <a class="nav-link text-dark" asp-area="" asp-controller="Activities" asp-action="Index">Activities</a>
+                           </li>
+                           <li class="nav-item">
+                               <a class="nav-link text-dark" asp-area="" asp-controller="Manage" asp-action="Index">Manage</a>
+                           </li>
+                       </ul>
+                       <div class="col-auto">
+                           Logged as: @Context.Session.GetString(@Worker.SessionLogin)
+                       </div>
+                       @using(Html.BeginForm("Logout", "Home"))
+                       {
+                           <div class="col">
+                               <input type="submit" class="btn btn-primary" value="Logout"/>
+                           </div>
+                       }
+                   }
                 </div>
             </div>
         </nav>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -17,17 +18,7 @@ namespace TimeReporter.Controllers
             
             Data data = JsonSerde.GetData();
 
-            selectedOption.Surnames = data.Workers.Select(worker => worker.Name).ToList();
-
-            if (selectedOption.Surnames.Any())
-            {
-                selectedOption.SelectedSurname = selectedOption.Surnames[0];
-            }
-
-            if (TempData["selectedSurname"] != null)
-            {
-                selectedOption.SelectedSurname = (string)TempData["selectedSurname"];
-            }
+            selectedOption.SelectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
             
             if (TempData["selectedMonth"] != null)
             {
@@ -92,11 +83,10 @@ namespace TimeReporter.Controllers
         }
 
         [HttpGet]
-        public ActionResult CreateProjectModal(string selectedSurname, string selectedMonth, int selectedYear, string selectedProject)
+        public ActionResult CreateProjectModal(string selectedMonth, int selectedYear, string selectedProject)
         {
             Activity activity = new Activity();
-
-            ViewBag.selectedSurname = selectedSurname;
+            
             ViewBag.selectedMonth = selectedMonth;
             ViewBag.selectedYear = selectedYear;
             ViewBag.selectedProject = selectedProject;
@@ -105,9 +95,10 @@ namespace TimeReporter.Controllers
         }
 
         [HttpPost]
-        public ActionResult ModalAction(string selectedSurname, string selectedMonth, int selectedYear, string selectedProject,
+        public ActionResult ModalAction(string selectedMonth, int selectedYear, string selectedProject,
             string code, string name, int budget)
         {
+            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
             Data data = JsonSerde.GetData();
             data.Activities.Add(
                 new Activity()
@@ -123,7 +114,6 @@ namespace TimeReporter.Controllers
             
             JsonSerde.SaveDataChanges(data);
             
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
             TempData["selectedProject"] = selectedProject;
@@ -131,18 +121,8 @@ namespace TimeReporter.Controllers
         }
 
         [HttpPost]
-        public ActionResult SelectSurname(string selectedSurname, string selectedMonth, int selectedYear)
+        public ActionResult SelectMonth(string selectedMonth, int selectedYear, string selectedProject)
         {
-            TempData["selectedSurname"] = selectedSurname;
-            TempData["selectedMonth"] = selectedMonth;
-            TempData["selectedYear"] = selectedYear;
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public ActionResult SelectMonth(string selectedSurname, string selectedMonth, int selectedYear, string selectedProject)
-        {
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
             TempData["selectedProject"] = selectedProject;
@@ -150,9 +130,8 @@ namespace TimeReporter.Controllers
         }
         
         [HttpPost]
-        public ActionResult SelectYear(string selectedSurname, string selectedMonth, int selectedYear, string selectedProject)
+        public ActionResult SelectYear(string selectedMonth, int selectedYear, string selectedProject)
         {
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
             TempData["selectedProject"] = selectedProject;
@@ -160,20 +139,19 @@ namespace TimeReporter.Controllers
         }
         
         [HttpPost]
-        public ActionResult SelectProject(string selectedSurname, string selectedProject)
+        public ActionResult SelectProject(string selectedProject)
         {
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedProject"] = selectedProject;
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public ActionResult CloseProject(string selectedSurname, string selectedMonth, int selectedYear, string selectedProject)
+        public ActionResult CloseProject(string selectedMonth, int selectedYear, string selectedProject)
         {
+            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
             if (!IsProjectActive(selectedProject))
             {
                 TempData["Alert"] = "This project is already closed or doesn't exist";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedMonth"] = selectedMonth;
                 TempData["selectedYear"] = selectedYear;
                 TempData["selectedProject"] = selectedProject;
@@ -186,7 +164,6 @@ namespace TimeReporter.Controllers
             JsonSerde.SaveDataChanges(data);
             
             TempData["Success"] = "Successfully closed project";
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
             TempData["selectedProject"] = selectedProject;
@@ -194,14 +171,14 @@ namespace TimeReporter.Controllers
         }
 
         [HttpPost]
-        public ActionResult AcceptTime(string selectedSurname, string selectedMonth, int selectedYear, string selectedProject, 
+        public ActionResult AcceptTime(string selectedMonth, int selectedYear, string selectedProject, 
              string worker, bool isMonthSubmitted, int time, int idx)
         {
+            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
             
             if (!IsProjectActive(selectedProject))
             {
                 TempData["Alert"] = "Can't accept because this project is closed";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedMonth"] = selectedMonth;
                 TempData["selectedYear"] = selectedYear;
                 TempData["selectedProject"] = selectedProject;
@@ -211,7 +188,6 @@ namespace TimeReporter.Controllers
             if (!isMonthSubmitted)
             {
                 TempData["Alert"] = "Can't accept because this report is not submitted";
-                TempData["selectedSurname"] = selectedSurname;
                 TempData["selectedMonth"] = selectedMonth;
                 TempData["selectedYear"] = selectedYear;
                 TempData["selectedProject"] = selectedProject;
@@ -222,7 +198,6 @@ namespace TimeReporter.Controllers
             AcceptWorker(worker, selectedMonth, selectedYear, selectedProject, time);
             
             TempData["Success"] = "Successfully accepted time";
-            TempData["selectedSurname"] = selectedSurname;
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
             TempData["selectedProject"] = selectedProject;

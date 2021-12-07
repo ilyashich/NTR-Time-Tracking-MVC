@@ -54,7 +54,6 @@
                             {
                                 @Html.TextBoxFor(m => m.Subcode, new { onchange = "show(this);", value = Model.Subcode})
                             }
-                            <input type="hidden" name="selectedSurname" value=@ViewBag.selectedSurname />
                             <input type="hidden" name="selectedDate" value=@ViewBag.selectedDate />
 
                         </div>
@@ -72,7 +71,6 @@
                             {
                                 @Html.TextBoxFor(m => m.Time, new { onchange = "show(this);", value = Model.Time})
                             }
-                            <input type="hidden" name="selectedSurname" value=@ViewBag.selectedSurname />
                             <input type="hidden" name="selectedDate" value=@ViewBag.selectedDate />
 
                         </div>
@@ -90,15 +88,13 @@
                             {
                                 @Html.TextBoxFor(m => m.Description, new { onchange = "show(this);", value = Model.Description})
                             }
-                            <input type="hidden" name="selectedSurname" value=@ViewBag.selectedSurname />
                             <input type="hidden" name="selectedDate" value=@ViewBag.selectedDate />
 
                         </div>
                 </div>
 
             </div>
-
-            <input type="hidden" name="selectedSurname" value=@ViewBag.selectedSurname />
+            
             <input type="hidden" name="selectedDate" value=@ViewBag.selectedDate />
             <input type="hidden" name="idx" value=@ViewBag.idx />
 

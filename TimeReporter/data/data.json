@@ -263,6 +263,23 @@
       "active": true,
       "subactivities": [],
       "workers": []
+    },
+    {
+      "code": "Europa-77",
+      "manager": "Trujillo",
+      "name": "Europa",
+      "budget": 300,
+      "active": true,
+      "subactivities": [
+        {
+          "code": "database"
+        }
+      ],
+      "workers": [
+        {
+          "name": "May"
+        }
+      ]
     }
   ]
 }

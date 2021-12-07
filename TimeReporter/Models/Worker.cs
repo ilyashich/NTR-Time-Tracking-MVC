@@ -11,5 +11,7 @@ namespace TimeReporter.Models
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
+        
+        public const string SessionLogin = "SessionLogin";
     }
 }

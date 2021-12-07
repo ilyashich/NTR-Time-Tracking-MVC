@@ -1,16 +1,37 @@
-﻿@{
+﻿@model Option
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <p class="h3">Welcome to the Time Management System</p>
+    <p class="h3">Login</p>
 </div>
 
 <div style="margin-top: 30px;"></div>
 
-<div class="text-center">
-    <a href="/Manage" class="btn btn-link btn-lg" role="button">Manage panel</a>
-    <a href="/Activities" class="btn btn-link btn-lg" role="button">Activities panel</a>
-</div>
+@using(Html.BeginForm("Login", "Home", FormMethod.Post))
+{
+    <div class="d-flex justify-content-center">
+        @Html.DropDownListFor(model => model.SelectedSurname,
+            new SelectList(Model.Surnames),
+            new { @class="selectpicker"})
+    </div>
+    <div style="margin-top: 10px" class="d-flex justify-content-center">
+        <input type="submit" class="btn btn-primary" value="Login" />
+    </div>
+}
 
+<div style="margin-top: 30px;"></div>
 
+@using(Html.BeginForm("AddNewWorker", "Home", FormMethod.Post))
+{
+    <div class="text-center">
+        <p class="h5">Add new user</p>
+    </div>
+    <div class="d-flex justify-content-center">
+        @Html.Editor("newSurname", new{ placeholder = "Enter name", type = "text"})
+    </div>
+    <div style="margin-top: 10px" class="d-flex justify-content-center">
+        <input type="submit" class="btn btn-primary" value="Create and login" />
+    </div>
+}

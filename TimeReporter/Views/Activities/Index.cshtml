@@ -22,30 +22,18 @@
 }
 
 <div class="row">
-    @using(Html.BeginForm("SelectSurname", "Activities", FormMethod.Post))
-    {
-        <div class="col">
-            @Html.DropDownListFor(model => model.SelectedSurname,
-                new SelectList(Model.Surnames),
-                new { @class="selectpicker", onchange="this.form.submit();" })
-            <input type="hidden" name="selectedDate" value=@Model.SelectedDate />
-            
-        </div>
-    }
 
     @using(Html.BeginForm("SelectDate", "Activities", FormMethod.Post))
     {
         <div class="col">
             @Html.EditorFor(model => model.SelectedDate, 
                 new {  htmlAttributes = new { onchange = "this.form.submit();" } })
-            <input type="hidden" name="selectedSurname" value=@Model.SelectedSurname />
         </div>
     }
     
     @using (Html.BeginForm("SubmitMonth", "Activities", FormMethod.Post))
     {
         <div class="col">
-            <input type="hidden" name="selectedSurname" value=@Model.SelectedSurname />
             <input type="hidden" name="selectedDate" value=@Model.SelectedDate />
             <button type="submit" class="btn btn-primary">Submit this month</button>
         </div>
@@ -154,7 +142,6 @@
                 @using (Html.BeginForm("Delete", "Activities", FormMethod.Post))
                 {
                     <div class="col">
-                        <input type="hidden" name="selectedSurname" value=@Model.SelectedSurname />
                         <input type="hidden" name="selectedDate" value=@Model.SelectedDate />
                         <button type="submit" name="deleteIdx" value="@i" class="btn btn-primary">Delete</button>
                     </div>
