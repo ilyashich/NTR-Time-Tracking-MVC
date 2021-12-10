@@ -24,6 +24,9 @@ namespace TimeReporter.Models
         public virtual Worker Worker { get; set;  }
         public virtual List<Entry> Entries { get; set; }
         public virtual List<AcceptedTime> Accepted { get; set; }
+        
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime Timestamp { get; set; }
 
     }
 }

@@ -34,5 +34,8 @@ namespace TimeReporter.Models
         public virtual Activity Activity { get; set; }
         public virtual Subactivity Subactivity { get; set; }
         public virtual Report Report { get; set; }
+        
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime Timestamp { get; set; }
     }
 }

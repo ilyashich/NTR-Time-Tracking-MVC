@@ -23,7 +23,6 @@ namespace TimeReporter.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             InitialMigration(modelBuilder);
-            PopulateMigration(modelBuilder);
         }
         
         private void InitialMigration(ModelBuilder mb)
@@ -34,17 +33,11 @@ namespace TimeReporter.Models
                 "Ulrich","Trujillo"
             };
 
-            int i = 1;
-            
-            foreach (var name in names)
+            for(var i = 0; i < 11; ++i)
             {
-                mb.Entity<Worker>().HasData(new Worker() { WorkerId = i++, Name = name });
+                mb.Entity<Worker>().HasData(new Worker() { WorkerId = i+1, Name = names[i] });
             }
             
-        }
-
-        private void PopulateMigration(ModelBuilder mb)
-        {
             string[] activityCodes =
             {
                 "Mercury-1", "Jupiter-2", "Pluto-1", "Saturn-5", "Venus-3", 
@@ -60,7 +53,7 @@ namespace TimeReporter.Models
                 115, 50, 100, 100, -10, 70, -1, 150, 150, 300
             };
 
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
                 mb.Entity<Activity>().HasData(new Activity()
                 {
@@ -77,7 +70,7 @@ namespace TimeReporter.Models
                 
             }
 
-            for (int i = 0; i < 10; ++i)
+            for (var i = 0; i < 10; ++i)
             {
                 if (i != 6)
                 {
@@ -126,7 +119,7 @@ namespace TimeReporter.Models
             mb.Entity<Entry>().HasData(new Entry()
             {
                 EntryId = 1, Date = DateTime.Today, WorkerId = 1, Time = 70, Description = "created table",
-                ActivityId = 1, ReportId = 1, SubactivityId = 1
+                ActivityId = 2, ReportId = 1, SubactivityId = 2
             });
             
             mb.Entity<Entry>().HasData(new Entry()
@@ -150,7 +143,7 @@ namespace TimeReporter.Models
             mb.Entity<Entry>().HasData(new Entry()
             {
                 EntryId = 5, Date = DateTime.Today, WorkerId = 4, Time = 150, Description = "added column",
-                ActivityId = 4, ReportId = 4, SubactivityId = 4
+                ActivityId = 5, ReportId = 4, SubactivityId = 5
             });
             
             mb.Entity<Entry>().HasData(new Entry()
@@ -168,8 +161,9 @@ namespace TimeReporter.Models
             mb.Entity<Entry>().HasData(new Entry()
             {
                 EntryId = 8, Date = DateTime.Today, WorkerId = 8, Time = 70, Description = "created table",
-                ActivityId = 8, ReportId = 8, SubactivityId = 8
+                ActivityId = 3, ReportId = 8, SubactivityId = 3
             });
+            
         }
 
     }
