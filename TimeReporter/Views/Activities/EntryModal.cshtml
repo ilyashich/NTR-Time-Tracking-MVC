@@ -28,7 +28,7 @@
                                 
                                 @foreach (var code in ViewBag.codes)
                                 { 
-                                    @if (ViewBag.idx != -1 && code == Model.Code)
+                                    @if (ViewBag.idx != -1 && code == Model.Activity.Code)
                                     {
                                         <option value="@code" selected>@code</option>
                                     }
@@ -48,13 +48,12 @@
 
                             @if (ViewBag.idx == -1)
                             {
-                                @Html.TextBoxFor(m => m.Subcode, new{ onchange = "show(this);", placeholder = "Enter subcode"})
+                                @Html.TextBox("subcode", "", new{ onchange = "show(this);", placeholder = "Enter subcode"})
                             }
                             else
                             {
-                                @Html.TextBoxFor(m => m.Subcode, new { onchange = "show(this);", value = Model.Subcode})
+                                @Html.TextBox("subcode", Model.Subactivity.Code,  new { onchange = "show(this);"})
                             }
-                            <input type="hidden" name="selectedDate" value=@ViewBag.selectedDate />
 
                         </div>
                 </div>
@@ -69,9 +68,8 @@
                             }
                             else
                             {
-                                @Html.TextBoxFor(m => m.Time, new { onchange = "show(this);", value = Model.Time})
+                                @Html.TextBox("time", Model.Time, new { onchange = "show(this);"})
                             }
-                            <input type="hidden" name="selectedDate" value=@ViewBag.selectedDate />
 
                         </div>
                 </div>
@@ -82,13 +80,12 @@
 
                             @if (ViewBag.idx == -1)
                             {
-                                @Html.TextBoxFor(m => m.Description, new{ onchange = "show(this);", placeholder = "Enter description"})
+                                @Html.TextBox("description", "", new{ onchange = "show(this);", placeholder = "Enter description"})
                             }
                             else
                             {
-                                @Html.TextBoxFor(m => m.Description, new { onchange = "show(this);", value = Model.Description})
+                                @Html.TextBox("description", Model.Description,  new { onchange = "show(this);"})
                             }
-                            <input type="hidden" name="selectedDate" value=@ViewBag.selectedDate />
 
                         </div>
                 </div>

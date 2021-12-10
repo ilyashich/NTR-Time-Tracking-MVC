@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TimeReporter.Models;
 
 namespace TimeReporter
 {
@@ -26,6 +28,10 @@ namespace TimeReporter
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             
             services.AddDistributedMemoryCache();
+            
+            services.AddDbContextPool<TimeReporterContext>(dbContextOptions =>
+                dbContextOptions.UseMySQL("server=localhost;port=3306;user=root;password=root;database=NTRTest"));
+
 
             services.AddSession(options =>
             {
@@ -33,6 +39,13 @@ namespace TimeReporter
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            
+            services.AddHttpContextAccessor();
+
+            services.AddMemoryCache();
+
+            services.AddMvc();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

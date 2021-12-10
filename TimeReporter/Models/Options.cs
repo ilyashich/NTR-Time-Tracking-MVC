@@ -10,7 +10,7 @@ namespace TimeReporter.Models
         {
             SelectedDate = DateTime.Now; 
         }
-        public string SelectedSurname { get; set; }
+        public Worker SelectedWorker { get; set; }
         
         [DataType(DataType.Date)]
         public DateTime SelectedDate { get; set; }

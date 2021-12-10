@@ -14,9 +14,9 @@ namespace TimeReporter.Models
             AcceptedTime = new List<int>();
         }
 
-        public string SelectedSurname { get; set; }
+        public int SelectedWorkerId { get; set; }
         
-        public string SelectedProject { get; set; }
+        public int SelectedProjectId { get; set; }
         
         public string SelectedMonth { get; set; }
 
@@ -30,8 +30,8 @@ namespace TimeReporter.Models
         
         public List<string> Surnames { get; set; }
 
-        public List<string> Projects { get; set; }
+        public List<Activity> Projects { get; set; }
 
-        public List<string> ProjectWorkers { get; set; }
+        public List<Worker> ProjectWorkers { get; set; }
     }
 }

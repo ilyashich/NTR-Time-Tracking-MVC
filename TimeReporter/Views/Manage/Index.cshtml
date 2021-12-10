@@ -32,31 +32,31 @@
         @using (Html.BeginForm("SelectProject", "Manage", FormMethod.Post))
         {
             <div class="col">
-                <select name="selectedProject" class="selectpicker" onchange="this.form.submit();">
+                <select name="selectedProjectId" class="selectpicker" onchange="this.form.submit();">
                     @if (Model.Projects.Count > 0)
                     {
                         @foreach (var project in Model.Projects)
                         {
                             @if (ViewBag.isActive)
                             {
-                                @if (project == Model.SelectedProject)
+                                @if (project.ActivityId == Model.SelectedProjectId)
                                 {
-                                    <option value=@project selected>@project (active)</option>
+                                    <option value=@project.ActivityId selected>@project.Code (active)</option>
                                 }
                                 else
                                 {
-                                    <option value=@project>@project</option>
+                                    <option value=@project.ActivityId>@project.Code</option>
                                 }
                             }
                             else
                             {
-                                @if (project == Model.SelectedProject)
+                                @if (project.ActivityId == Model.SelectedProjectId)
                                 {
-                                    <option value=@project selected>@project (closed)</option>
+                                    <option value=@project.ActivityId selected>@project.Code (closed)</option>
                                 }
                                 else
                                 {
-                                    <option value=@project>@project</option>
+                                    <option value=@project.ActivityId>@project.Code</option>
                                 }
                             }
                         }
@@ -87,7 +87,7 @@
                             Text = System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(i)
                         }),
                     new { @class="selectpicker", data_width="150px", onchange = "this.form.submit();"})
-                <input type="hidden" name="selectedProject" value=@Model.SelectedProject />
+                <input type="hidden" name="selectedProjectId" value=@Model.SelectedProjectId />
                 <input type="hidden" name="selectedYear" value=@Model.SelectedYear />
             </div>
         }
@@ -103,7 +103,7 @@
                             Text = i.ToString()
                         }),
                     new { @class="selectpicker", data_width="fit", onchange = "this.form.submit();"})
-                <input type="hidden" name="selectedProject" value=@Model.SelectedProject />
+                <input type="hidden" name="selectedProjectId" value=@Model.SelectedProjectId />
                 <input type="hidden" name="selectedMonth" value=@Model.SelectedMonth />
             </div>
         }
@@ -112,7 +112,7 @@
             <div class="col">
                 <input type="hidden" name="selectedMonth" value=@Model.SelectedMonth />
                 <input type="hidden" name="selectedYear" value=@Model.SelectedYear />
-                <input type="hidden" name="selectedProject" value=@Model.SelectedProject />
+                <input type="hidden" name="selectedProjectId" value=@Model.SelectedProjectId />
                 <button type="submit" class="btn btn-secondary">Close This Project</button>
             </div>
         }
@@ -122,7 +122,7 @@
 <div style="margin-top: 10px">
     <button href="" class="btn btn-primary" data-toggle="modal" data-target="#CreateProjectModal"
             data-url='@(Url.Action("CreateProjectModal", new {selectedMonth = Model.SelectedMonth, 
-                          selectedYear = Model.SelectedYear, selectedProject = Model.SelectedProject}))'>
+                          selectedYear = Model.SelectedYear, selectedProjectId = Model.SelectedProjectId}))'>
         Create New Project
     </button>
 </div>
@@ -133,7 +133,7 @@
     
 
         <fieldset style="padding:30px; border:3px solid #4238ca; background:#f6f8ff;">
-            <legend>Reports for @Model.SelectedProject project</legend>
+            <legend>Reports for project</legend>
             <table class="table table-bordered table-hover">
                 <tr>
                     <th>
@@ -153,7 +153,7 @@
                 {
                     <tr>
                         <td>
-                            @Model.ProjectWorkers[i]
+                            @Model.ProjectWorkers[i].Name
                         </td>
                         <td>
                             @Model.SubmittedTime[i]
@@ -181,8 +181,8 @@
             
                                     <input type="hidden" name="selectedMonth" value=@Model.SelectedMonth />
                                     <input type="hidden" name="selectedYear" value=@Model.SelectedYear />
-                                    <input type="hidden" name="selectedProject" value=@Model.SelectedProject />
-                                    <input type="hidden" name="worker" value=@Model.ProjectWorkers[i] />
+                                    <input type="hidden" name="selectedProjectId" value=@Model.SelectedProjectId />
+                                    <input type="hidden" name="workerId" value=@Model.ProjectWorkers[i].WorkerId />
                                     <button type="submit" class="btn btn-outline-primary">Save</button>
                                 }
                                 else

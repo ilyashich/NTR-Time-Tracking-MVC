@@ -1,15 +1,29 @@
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TimeReporter.Models
 {
     public class AcceptedTime
     {
-        [JsonPropertyName("code")]
-        public string Code { get; set; }
+        [Key] 
+        public int AcceptedTimeId { get; set;  }
 
-        [JsonPropertyName("time")]
+        [ForeignKey("Activity")]
+        public int ActivityId { get; set; }
+
+        [Required]
         public int Time { get; set; }
         
+        [ForeignKey("Report")]
+        public int ReportId { get; set; }
+        
+        [ForeignKey("Worker")]
+        public int WorkerId { get; set; }
+
+        public virtual Activity Activity { get; set; }
+        public virtual Report Report { get; set; }
+        public virtual Worker Worker { get; set; }
+
 
     }
 }

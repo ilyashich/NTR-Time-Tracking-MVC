@@ -1,24 +1,38 @@
-using System.Text.Json.Serialization;
-using System.Collections.Generic;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TimeReporter.Models
 {
     public class Entry
     {
-        [JsonPropertyName("date")]
-        public string Date { get; set; }
+        [Key] 
+        public int EntryId { get; set;  }
 
-        [JsonPropertyName("code")]
-        public string Code { get; set; }
+        [Required]
+        [Column(TypeName = "date")]
+        public DateTime Date { get; set; }
 
-        [JsonPropertyName("subcode")]
-        public string Subcode { get; set; }
+        [ForeignKey("Activity")]
+        public int ActivityId { get; set; }
 
-        [JsonPropertyName("time")]
+        [ForeignKey("Subactivity")]
+        public int? SubactivityId { get; set; }
+
+        [Required]
         public int Time { get; set; }
-
-        [JsonPropertyName("description")]
+        
         public string Description { get; set; }
+        
+        [ForeignKey("Worker")]
+        public int WorkerId { get; set; }
+        
+        [ForeignKey("Report")]
+        public int ReportId { get; set; }
+
+        public virtual Worker Worker { get; set; }
+        public virtual Activity Activity { get; set; }
+        public virtual Subactivity Subactivity { get; set; }
+        public virtual Report Report { get; set; }
     }
 }

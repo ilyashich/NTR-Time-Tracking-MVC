@@ -58,7 +58,7 @@
 <div class="row">
     <div style="margin-top: 10px" class="col-md-2">
         <button href="" class="btn btn-primary" data-toggle="modal" data-target="#entryModal"
-                data-url='@(Url.Action("EntryModal", new {selectedSurname = Model.SelectedSurname, selectedDate = Model.SelectedDate, idx=-1}))'>
+                data-url='@(Url.Action("EntryModal", new {selectedSurname = Model.SelectedWorker, selectedDate = Model.SelectedDate, idx=-1}))'>
             Add New Entry
         </button>
     </div>
@@ -102,7 +102,7 @@
                         Code
                     </th>
                     <td>
-                        @Model.Entries[i].Code
+                        @Model.Entries[i].Activity.Code
                     </td>
                 </tr>
                 <tr>
@@ -110,7 +110,7 @@
                         Subcode
                     </th>
                     <td>
-                        @Model.Entries[i].Subcode
+                        @Model.Entries[i].Subactivity.Code
                     </td>
                 </tr>
                 <tr>
@@ -134,7 +134,7 @@
             <div class="row">
                 <div class="col">
                     <button href="" class="btn btn-primary" data-toggle="modal" data-target="#entryModal"
-                            data-url='@(Url.Action("EntryModal", new {selectedSurname = Model.SelectedSurname, selectedDate = Model.SelectedDate, idx = i}))'>
+                            data-url='@(Url.Action("EntryModal", new {selectedSurname = Model.SelectedWorker, selectedDate = Model.SelectedDate, idx = i}))'>
                         Edit
                     </button>
                 </div>
@@ -228,7 +228,7 @@
                                 @(i+1)
                             </th>
                             <td>
-                                @ViewBag.accepted[i].Code
+                                @ViewBag.accepted[i].Activity.Code
                             </td>
                             <td>
                                 @ViewBag.accepted[i].Time

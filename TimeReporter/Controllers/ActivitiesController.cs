@@ -4,28 +4,39 @@ using SysActivity = System.Diagnostics.Activity;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
-
 using TimeReporter.Models;
+using TimeReporter.Models.Repository;
 
 namespace TimeReporter.Controllers
 {
     public class ActivitiesController : Controller
     {
+        private readonly TimeReporterContext _db;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        private readonly ReportRepository _reportRepository;
+
+        public ActivitiesController(TimeReporterContext context, IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _db = context;
+            _reportRepository = new ReportRepository(_db);
+        }
+
         public ActionResult Index()
         {
-            Option selectedOption = new Option();
-            
-            Data data = JsonSerde.GetData();
-
-            selectedOption.SelectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
+            Option selectedOption = new Option
+            {
+                SelectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db)
+            };
 
             if (TempData["selectedDate"] != null)
             {
                 selectedOption.SelectedDate = (DateTime)TempData["selectedDate"];
             }
 
-            Report report = JsonSerde.GetReport(selectedOption.SelectedSurname, selectedOption.SelectedDate);
+            Report report = _reportRepository.GetReport(selectedOption.SelectedWorker, selectedOption.SelectedDate);
+
 
             List<Entry> entries = new List<Entry>();
             
@@ -36,20 +47,18 @@ namespace TimeReporter.Controllers
 
             if(report != null)
             {
-                entries = report.GetDayEntries(selectedOption.SelectedDate.ToString("yyyy-MM-dd"));
+                entries = _reportRepository.GetDayEntries(selectedOption.SelectedWorker, selectedOption.SelectedDate);
                 accepted = report.Accepted;
                 foreach (var accept in report.Accepted)
                 {
-                    managers.Add((from activity in data.Activities
-                        where activity.Code == accept.Code
-                        select activity).ToList()[0].Manager);
+                    managers.Add(accept.Activity.Worker.Name);
                 }
                 
-                projects.AddRange(report.Entries.Select(entry => entry.Code).Distinct());
+                projects.AddRange(report.Entries.Select(entry => entry.Activity.Code).Distinct());
 
                 foreach (var project in projects)
                 {
-                    projectSum.Add(report.Entries.Where(entry => entry.Code.Equals(project)).Sum(entry => entry.Time));
+                    projectSum.Add(report.Entries.Where(entry => entry.Activity.Code.Equals(project)).Sum(entry => entry.Time));
                 }
             }
 
@@ -74,8 +83,8 @@ namespace TimeReporter.Controllers
         [HttpPost]
         public ActionResult SubmitMonth(DateTime selectedDate)
         {
-            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
-            Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
+            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
+            Report report = _reportRepository.GetReport(selectedWorker, selectedDate);
             if (report == null)
             {
                 TempData["Alert"] = "Can't submit because report for this month doesn't exist";
@@ -91,9 +100,9 @@ namespace TimeReporter.Controllers
             }
 
             report.Frozen = true;
-            
-            JsonSerde.SaveReportChanges(report, selectedSurname, selectedDate);
-            TempData["Success"] = "Successfully submited month: " + selectedDate.ToString("MMMM");
+
+            _db.SaveChanges();
+            TempData["Success"] = "Successfully submitted month: " + System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(selectedDate.Month);
             TempData["selectedDate"] = selectedDate;
             return RedirectToAction("Index");
         }
@@ -101,15 +110,17 @@ namespace TimeReporter.Controllers
         [HttpPost]
         public ActionResult Delete(DateTime selectedDate, int deleteIdx)
         { 
-            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
-            Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
-            if(report.Frozen ||  !IsProjectActive(report, selectedDate, deleteIdx))
+            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
+            Report report = _reportRepository.GetReport(selectedWorker, selectedDate);
+            if(report.Frozen ||  !IsProjectActive(selectedDate, deleteIdx))
             {
                 TempData["Alert"] = "Month is frozen or project is not active";
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
-            DeleteEntry(report, selectedSurname, selectedDate, deleteIdx);
+
+            _db.Remove(report.Entries[deleteIdx]);
+            _db.SaveChanges();
             TempData["Success"] = "Successfully deleted entry";
             TempData["selectedDate"] = selectedDate;
             return RedirectToAction("Index");
@@ -118,28 +129,14 @@ namespace TimeReporter.Controllers
         [HttpGet]
         public ActionResult EntryModal(DateTime selectedDate, int idx)
         {
-            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
-            
-            Data data = JsonSerde.GetData();
+            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
 
-            Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
+            Entry entry = idx >= 0 ? _reportRepository.GetDayEntries(selectedWorker, selectedDate)[idx] : new Entry();
 
-            Entry entry;
-
-            if(idx >= 0)
-            {
-                entry = report.Entries.FindAll(e => 
-                    e.Date.Equals(selectedDate.ToString("yyyy-MM-dd")))[idx];
-            }
-            else
-            {
-                entry = new Entry();
-            }
-
-            ViewBag.selectedSurname = selectedSurname;
+            ViewBag.selectedSurname = selectedWorker.Name;
             ViewBag.selectedDate = selectedDate;
             ViewBag.idx = idx;
-            ViewBag.codes = data.GetAllCodes();
+            ViewBag.codes = _db.Activities.Select(activity => activity.Code).ToList();
 
             return PartialView(entry);
         }
@@ -148,13 +145,15 @@ namespace TimeReporter.Controllers
         public ActionResult ModalAction(DateTime selectedDate, int idx,
             string code, string subcode, int time, string description)
         {
-            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
-            if (JsonSerde.GetReport(selectedSurname, selectedDate) == null
+            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
+            if (_reportRepository.GetReport(selectedWorker, selectedDate) == null
                 && IsProjectActive(code)
                 && selectedDate.Month == DateTime.Now.Month
                 && selectedDate.Year == DateTime.Now.Year)
             {
-                JsonSerde.CreateNewMonthReport(selectedSurname, selectedDate);
+                Report newReport = new Report {Date = selectedDate, Frozen = false, WorkerId = selectedWorker.WorkerId};
+                _db.Reports.Add(newReport);
+                _db.SaveChanges();
             }
             else if (selectedDate.Month != DateTime.Now.Month || selectedDate.Year != DateTime.Now.Year)
             {
@@ -170,7 +169,7 @@ namespace TimeReporter.Controllers
                 
             }
             
-            Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
+            Report report = _reportRepository.GetReport(selectedWorker, selectedDate);
 
             if(report.Frozen)
             {
@@ -178,78 +177,63 @@ namespace TimeReporter.Controllers
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
-        
-            Entry entry = new Entry()
+
+            int activityId = _db.Activities.Where(activity => activity.Code == code)
+                                        .Select(activity => activity.ActivityId).Single();
+            int subactivityId = _db.Subactivities.Where(subactivity => subactivity.ActivityId == activityId 
+                                                                    && subactivity.Code == subcode)
+                                                .Select(subactivity => subactivity.SubactivityId)
+                                                .SingleOrDefault();
+            if (subactivityId == 0)
             {
-                Date = selectedDate.ToString("yyyy-MM-dd"),
-                Code = code,
-                Subcode = subcode,
-                Time = time,
-                Description = description
-            };
+                var newSubactivity = new Subactivity() {Code = subcode, ActivityId = activityId};
+                _db.Subactivities.Add(newSubactivity);
+                _db.SaveChanges();
+                subactivityId = newSubactivity.SubactivityId;
+            }
+
+
 
             if(idx == -1)
             {
-                AddNewEntry(selectedSurname, selectedDate, entry);
+                Entry newEntry = new Entry()
+                {
+                    Date = selectedDate,
+                    ActivityId = activityId,
+                    SubactivityId = subactivityId,
+                    Time = time,
+                    Description = description,
+                    WorkerId = selectedWorker.WorkerId,
+                    ReportId = report.ReportId
+                };
+                
+                _db.Entries.Add(newEntry);
             }
             else
             {
-                EditEntry(selectedSurname, selectedDate, entry, idx);
+                var editEntry = _reportRepository.GetDayEntries(selectedWorker, selectedDate)[idx];
+                editEntry.ActivityId = activityId;
+                editEntry.SubactivityId = subactivityId;
+                editEntry.Time = time;
+                editEntry.Description = description;
             }
+
+            _db.SaveChanges();
             
             TempData["selectedDate"] = selectedDate;
             return RedirectToAction("Index");
         }
 
-        private void DeleteEntry(Report report, string selectedSurname, DateTime selectedDate, int deleteIdx)
+        private bool IsProjectActive(DateTime selectedDate, int idx)
         {
-            report.Entries.Remove(report.Entries.FindAll(entry => 
-                entry.Date.Equals(selectedDate.ToString("yyyy-MM-dd")))[deleteIdx]);
-            JsonSerde.SaveReportChanges(report, selectedSurname, selectedDate);
-        }
-
-        private void AddNewEntry(string selectedSurname, DateTime selectedDate, Entry entry)
-        {
-            Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
-            report.Entries.Add(entry);
-            Data data = JsonSerde.GetData();
-            Activity activity = data.Activities.Find(activity => activity.Code.Equals(entry.Code));
-            
-            if (activity != null && !activity.GetAllSubactivities().Contains(entry.Subcode))
-            {
-                data.Activities[data.Activities.IndexOf(activity)].Subactivities.Add(new Subactivity{Code = entry.Subcode});
-            }
-            
-            
-            JsonSerde.SaveDataChanges(data);
-            JsonSerde.SaveReportChanges(report, selectedSurname, selectedDate);
-        }
-
-        private void EditEntry(string selectedSurname, DateTime selectedDate, Entry entry, int idx)
-        {
-            Report report = JsonSerde.GetReport(selectedSurname, selectedDate);
-            report.Entries[report.Entries.IndexOf(report.Entries.FindAll(e => 
-                e.Date.Equals(selectedDate.ToString("yyyy-MM-dd")))[idx])] = entry;
-            JsonSerde.SaveReportChanges(report, selectedSurname, selectedDate);
-        }
-
-        private bool IsMonthFrozen(string selectedSurname, DateTime selectedDate)
-        {
-            return JsonSerde.GetReport(selectedSurname, selectedDate).Frozen;
-        }
-
-        private bool IsProjectActive(Report report, DateTime selectedDate, int idx)
-        {
-            string checkCode = report.Entries.FindAll(entry => entry.Date.Equals(selectedDate.ToString("yyyy-MM-dd")))[idx].Code;
-            Activity activity = JsonSerde.GetData().Activities.Find(activity => 
-                activity.Code.Equals(checkCode));
+            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
+            Activity activity = _reportRepository.GetDayEntries(selectedWorker, selectedDate)[idx].Activity;
             return activity != null && activity.Active;
         }
 
         private bool IsProjectActive(string code)
         {
-            Activity activity = JsonSerde.GetData().Activities.Find(activity => 
-                activity.Code.Equals(code));
+            Activity activity = _db.Activities.SingleOrDefault(activity1 => activity1.Code == code);
             return activity != null && activity.Active;
         }
     }

@@ -1,26 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
-
+using Microsoft.EntityFrameworkCore;
 using TimeReporter.Models;
+using TimeReporter.Models.Repository;
 
 
 namespace TimeReporter.Controllers
 {
     public class ManageController : Controller
     {
+        private readonly TimeReporterContext _db;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        private readonly ReportRepository _reportRepository;
+        private readonly ActivityRepository _activityRepository;
+
+        public ManageController(TimeReporterContext context, IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _db = context;
+            _reportRepository = new ReportRepository(_db);
+            _activityRepository = new ActivityRepository(_db);
+        }
         // GET
         public IActionResult Index()
         {
-            ManageOption selectedOption = new ManageOption();
-            
-            Data data = JsonSerde.GetData();
+            ManageOption selectedOption = new ManageOption
+            {
+                SelectedWorkerId = SessionUser.GetSessionUser(_httpContextAccessor, _db).WorkerId
+            };
 
-            selectedOption.SelectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
-            
             if (TempData["selectedMonth"] != null)
             {
                 selectedOption.SelectedMonth = (string)TempData["selectedMonth"];
@@ -30,44 +41,44 @@ namespace TimeReporter.Controllers
             {
                 selectedOption.SelectedYear = (int)TempData["selectedYear"];
             }
-            
-            selectedOption.Projects = data.Activities
-                .FindAll(activity => activity.Manager.Equals(selectedOption.SelectedSurname))
-                .ConvertAll(activity => activity.Code);
+
+            selectedOption.Projects = _db.Activities
+                .Where(activity => activity.Worker.WorkerId == selectedOption.SelectedWorkerId).ToList();
             
             if (selectedOption.Projects.Any())
             {
-                selectedOption.SelectedProject = selectedOption.Projects[0];
+                selectedOption.SelectedProjectId = selectedOption.Projects[0].ActivityId;
             }
 
-            if (TempData["selectedProject"] != null)
+            if (TempData["selectedProjectId"] != null)
             {
-                selectedOption.SelectedProject = (string)TempData["selectedProject"];
+                selectedOption.SelectedProjectId = (int)TempData["selectedProjectId"];
             }
 
-            Activity activity = data.Activities
-                .Find(activity => activity.Code.Equals(selectedOption.SelectedProject));
+            Activity activity =
+                _db.Activities.SingleOrDefault(activity => activity.ActivityId == selectedOption.SelectedProjectId);
 
             if (activity != null)
             {
-                selectedOption.ProjectWorkers = activity.GetAllWorkersForActivity(selectedOption.SelectedMonth, selectedOption.SelectedYear)
-                                                        .Select(worker => worker.Name).ToList();
+                var workers = _db.Workers.Include(worker => worker.Entries).ToList();
+                selectedOption.ProjectWorkers = workers.Where(worker =>
+                        worker.Entries.Exists(entry => entry.ActivityId == selectedOption.SelectedProjectId))
+                    .Select(worker => worker).ToList();
                 ViewBag.budget = activity.Budget;
                 ViewBag.isActive = activity.Active;
             }
             else
             {
-                selectedOption.ProjectWorkers = new List<string>();
+                selectedOption.ProjectWorkers = new List<Worker>();
             }
-
+            
             foreach (var worker in selectedOption.ProjectWorkers)
             {
-                Report report = JsonSerde.GetReport(worker, selectedOption.SelectedMonth, selectedOption.SelectedYear);
+                Report report = _reportRepository.GetReport(worker.WorkerId, selectedOption.SelectedMonth, selectedOption.SelectedYear);
                 if (report != null)
                 {
                     selectedOption.IsFrozen.Add(report.Frozen);
-                    AcceptedTime accepted =
-                        report.Accepted.Find(accepted => accepted.Code == selectedOption.SelectedProject);
+                    AcceptedTime accepted = _reportRepository.GetAccepted(report, selectedOption.SelectedProjectId);
                     if (accepted != null)
                     {
                         selectedOption.AcceptedTime.Add(accepted.Time);
@@ -77,7 +88,8 @@ namespace TimeReporter.Controllers
                         selectedOption.AcceptedTime.Add(0);
                     }
 
-                    int timeSum = report.Entries.Where(entry => entry.Code.Equals(selectedOption.SelectedProject)).Sum(entry => entry.Time);
+                    int timeSum = report.Entries.Where(entry => entry.ActivityId == selectedOption.SelectedProjectId)
+                        .Sum(entry => entry.Time);
                     selectedOption.SubmittedTime.Add(timeSum);
                 }
             }
@@ -85,124 +97,117 @@ namespace TimeReporter.Controllers
         }
 
         [HttpGet]
-        public ActionResult CreateProjectModal(string selectedMonth, int selectedYear, string selectedProject)
+        public ActionResult CreateProjectModal(string selectedMonth, int selectedYear, int selectedProjectId)
         {
             Activity activity = new Activity();
             
             ViewBag.selectedMonth = selectedMonth;
             ViewBag.selectedYear = selectedYear;
-            ViewBag.selectedProject = selectedProject;
+            ViewBag.selectedProjectId = selectedProjectId;
 
             return PartialView(activity);
         }
 
         [HttpPost]
-        public ActionResult ModalAction(string selectedMonth, int selectedYear, string selectedProject,
+        public ActionResult ModalAction(string selectedMonth, int selectedYear, int selectedProjectId,
             string code, string name, int budget)
         {
-            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
-            Data data = JsonSerde.GetData();
-            data.Activities.Add(
+            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
+            _activityRepository.AddNewActivity(
                 new Activity()
                 {
                     Code = code,
-                    Manager = selectedSurname,
+                    WorkerId = selectedWorker.WorkerId,
                     Name = name,
                     Budget = budget,
                     Active = true,
-                    Subactivities = new List<Subactivity>()
+                    Subactivities = new List<Subactivity>(),
+                    Entries = new List<Entry>()
                 });
-            
-            JsonSerde.SaveDataChanges(data);
-            
+
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
-            TempData["selectedProject"] = selectedProject;
+            TempData["selectedProjectId"] = selectedProjectId;
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public ActionResult SelectMonth(string selectedMonth, int selectedYear, string selectedProject)
+        public ActionResult SelectMonth(string selectedMonth, int selectedYear, int selectedProjectId)
         {
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
-            TempData["selectedProject"] = selectedProject;
+            TempData["selectedProjectId"] = selectedProjectId;
             return RedirectToAction("Index");
         }
         
         [HttpPost]
-        public ActionResult SelectYear(string selectedMonth, int selectedYear, string selectedProject)
+        public ActionResult SelectYear(string selectedMonth, int selectedYear, int selectedProjectId)
         {
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
-            TempData["selectedProject"] = selectedProject;
+            TempData["selectedProjectId"] = selectedProjectId;
             return RedirectToAction("Index");
         }
         
         [HttpPost]
-        public ActionResult SelectProject(string selectedMonth, int selectedYear, string selectedProject)
+        public ActionResult SelectProject(string selectedMonth, int selectedYear, int selectedProjectId)
         {
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
-            TempData["selectedProject"] = selectedProject;
+            TempData["selectedProjectId"] = selectedProjectId;
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public ActionResult CloseProject(string selectedMonth, int selectedYear, string selectedProject)
+        public ActionResult CloseProject(string selectedMonth, int selectedYear, int selectedProjectId)
         {
-            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
-            if (!IsProjectActive(selectedProject))
+            if (!IsProjectActive(selectedProjectId))
             {
                 TempData["Alert"] = "This project is already closed or doesn't exist";
                 TempData["selectedMonth"] = selectedMonth;
                 TempData["selectedYear"] = selectedYear;
-                TempData["selectedProject"] = selectedProject;
+                TempData["selectedProjectId"] = selectedProjectId;
                 return RedirectToAction("Index");
             }
 
-            Data data = JsonSerde.GetData();
-            data.Activities.Find(activity => activity.Code == selectedProject).Active = false;
-            
-            JsonSerde.SaveDataChanges(data);
-            
+            _db.Activities.Single(activity => activity.ActivityId == selectedProjectId).Active = false;
+            _db.SaveChanges();
+
             TempData["Success"] = "Successfully closed project";
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
-            TempData["selectedProject"] = selectedProject;
+            TempData["selectedProjectId"] = selectedProjectId;
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public ActionResult AcceptTime(string selectedMonth, int selectedYear, string selectedProject, 
-             string worker, int time)
+        public ActionResult AcceptTime(string selectedMonth, int selectedYear, int selectedProjectId, 
+             int workerId, int time)
         {
-            string selectedSurname = HttpContext.Session.GetString(Worker.SessionLogin);
-            
-            if (!IsProjectActive(selectedProject))
+            if (!IsProjectActive(selectedProjectId))
             {
                 TempData["Alert"] = "Can't accept because this project is closed";
                 TempData["selectedMonth"] = selectedMonth;
                 TempData["selectedYear"] = selectedYear;
-                TempData["selectedProject"] = selectedProject;
+                TempData["selectedProjectId"] = selectedProjectId;
                 return RedirectToAction("Index");
             }
 
-            RecalculateBudget(worker, selectedMonth, selectedYear, selectedProject, time);
-            AcceptWorker(worker, selectedMonth, selectedYear, selectedProject, time);
+            RecalculateBudget(workerId, selectedMonth, selectedYear, selectedProjectId, time);
+            AcceptWorker(workerId, selectedMonth, selectedYear, selectedProjectId, time);
             
             TempData["Success"] = "Successfully accepted time";
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
-            TempData["selectedProject"] = selectedProject;
+            TempData["selectedProjectId"] = selectedProjectId;
             return RedirectToAction("Index");
         }
 
-        private void RecalculateBudget(string worker, string selectedMonth, int selectedYear, string selectedProject, int time)
+        private void RecalculateBudget(int workerId, string selectedMonth, int selectedYear, int selectedProjectId, int time)
         {
-            Report report = JsonSerde.GetReport(worker, selectedMonth, selectedYear);
+            Report report = _reportRepository.GetReport(workerId, selectedMonth, selectedYear);
             
-            AcceptedTime acceptedTime = report.Accepted.Find(accepted => accepted.Code == selectedProject);
+            AcceptedTime acceptedTime = report.Accepted.SingleOrDefault(accepted => accepted.ActivityId == selectedProjectId);
 
             int timeChange;
 
@@ -215,30 +220,23 @@ namespace TimeReporter.Controllers
                 timeChange = -time;
             }
 
-            Data data = JsonSerde.GetData();
-            
-            Activity activity = data.Activities.Find(activity =>
-                activity.Code == selectedProject);
+            Activity activity = _db.Activities.SingleOrDefault(accepted => accepted.ActivityId == selectedProjectId);
             
             if (activity != null)
             {
-                data.Activities[data.Activities.IndexOf(activity)].Budget += timeChange;
+                activity.Budget += timeChange;
             }
 
-            // data.Activities[
-            //     data.Activities.IndexOf((from activity in data.Activities
-            //         where activity.Code == selectedProject
-            //         select activity).ToList()[0])].Budget -= time;
-            JsonSerde.SaveDataChanges(data);
+            _db.SaveChanges();
         }
 
-        private void AcceptWorker(string worker, string selectedMonth, int selectedYear, string selectedProject, int time)
+        private void AcceptWorker(int workerId, string selectedMonth, int selectedYear, int selectedProjectId, int time)
         {
-            Report report = JsonSerde.GetReport(worker, selectedMonth, selectedYear);
-            AcceptedTime acceptedTime = report.Accepted.Find(accepted => accepted.Code == selectedProject);
+            Report report = _reportRepository.GetReport(workerId, selectedMonth, selectedYear);
+            AcceptedTime acceptedTime = report.Accepted.SingleOrDefault(accepted => accepted.ActivityId == selectedProjectId);
             if (acceptedTime != null)
             {
-                report.Accepted[report.Accepted.IndexOf(acceptedTime)].Time = time;
+                acceptedTime.Time = time;
             }
             else
             {
@@ -246,19 +244,20 @@ namespace TimeReporter.Controllers
                 report.Accepted.Add(
                     new AcceptedTime()
                     {
-                        Code = selectedProject,
-                        Time = time
+                        ActivityId = selectedProjectId,
+                        Time = time,
+                        ReportId = report.ReportId,
+                        WorkerId = workerId
                     });
             }
 
-            JsonSerde.SaveReportChanges(report, worker, selectedMonth, selectedYear);
+            _db.SaveChanges();
         }
 
-        private bool IsProjectActive(string selectedProject)
+        private bool IsProjectActive(int selectedProjectId)
         {
-            Activity activity = JsonSerde.GetData().Activities.Find(activity => 
-                activity.Code == selectedProject);
-            return activity != null && activity.Active;
+            var selectedProject = _db.Activities.SingleOrDefault(activity => activity.ActivityId == selectedProjectId);
+            return selectedProject != null && selectedProject.Active;
         }
     }
 }

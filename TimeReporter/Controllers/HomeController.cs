@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MySql.EntityFrameworkCore.Extensions;
 using TimeReporter.Models;
 
 namespace TimeReporter.Controllers
@@ -13,20 +15,22 @@ namespace TimeReporter.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        
+        private readonly TimeReporterContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, TimeReporterContext context)
         {
             _logger = logger;
+            _db = context;
         }
 
         public IActionResult Index()
         {
-            Option selectedOption = new Option();
-            
-            Data data = JsonSerde.GetData();
+            Option selectedOption = new Option
+            {
+                Surnames = _db.Workers.Select(worker => worker.Name).ToList()
+            };
 
-            selectedOption.Surnames = data.Workers.Select(worker => worker.Name).ToList();
-            
             return View(selectedOption);
         }
         
@@ -36,25 +40,24 @@ namespace TimeReporter.Controllers
         }
         
         [HttpPost]
-        public IActionResult Login(string selectedSurname)
+        public IActionResult Login(string selectedWorker)
         {
-            HttpContext.Session.SetString(Worker.SessionLogin, selectedSurname);
+            Console.WriteLine(selectedWorker);
+            HttpContext.Session.SetString(SessionUser.SessionLogin, selectedWorker);
             return View();
         }
         
         [HttpPost]
         public IActionResult AddNewWorker(string newSurname)
         {
-            Data data = JsonSerde.GetData();
-            
-            List<string> workers = data.Workers.Select(worker => worker.Name).ToList();
+            List<string> workers = _db.Workers.Select(worker => worker.Name).ToList();
             
             if (!workers.Contains(newSurname))
             {
-                data.Workers.Add(new Worker{Name = newSurname});
-                JsonSerde.SaveDataChanges(data);
+                _db.Workers.Add(new Worker{Name = newSurname});
+                _db.SaveChanges();
             }
-            HttpContext.Session.SetString(Worker.SessionLogin, newSurname);
+            HttpContext.Session.SetString(SessionUser.SessionLogin, newSurname);
             return RedirectToAction("Login");
         }
         

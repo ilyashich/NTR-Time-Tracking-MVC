@@ -1,23 +1,29 @@
-using System.Text.Json.Serialization;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TimeReporter.Models
 {
     public class Report
     {
-        [JsonPropertyName("frozen")]
+        [Key] 
+        public int ReportId { get; set;  }
+
+        [Required]
         public bool Frozen { get; set; }
+        
+        [Required]
+        [Column(TypeName = "date")]
+        public DateTime Date { get; set; }
+        
+        [ForeignKey("Worker")]
+        public int WorkerId { get; set; }
 
-        [JsonPropertyName("entries")]
-        public List<Entry> Entries { get; set; }
 
-        [JsonPropertyName("accepted")]
-        public List<AcceptedTime> Accepted { get; set; }
-
-        public List<Entry> GetDayEntries(string date)
-        {
-            return Entries.FindAll(entry => entry.Date.Equals(date));
-        }
+        public virtual Worker Worker { get; set;  }
+        public virtual List<Entry> Entries { get; set; }
+        public virtual List<AcceptedTime> Accepted { get; set; }
 
     }
 }

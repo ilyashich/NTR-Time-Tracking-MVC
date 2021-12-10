@@ -12,7 +12,7 @@
 @using(Html.BeginForm("Login", "Home", FormMethod.Post))
 {
     <div class="d-flex justify-content-center">
-        @Html.DropDownListFor(model => model.SelectedSurname,
+        @Html.DropDownList("selectedWorker",
             new SelectList(Model.Surnames),
             new { @class="selectpicker"})
     </div>

@@ -19,7 +19,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                   @if (Context.Session.GetString(Worker.SessionLogin) != null)
+                   @if (Context.Session.GetString(SessionUser.SessionLogin) != null)
                    {
                        <ul class="navbar-nav flex-grow-1">
                            <li class="nav-item">
@@ -33,7 +33,7 @@
                            </li>
                        </ul>
                        <div class="col-auto">
-                           Logged as: @Context.Session.GetString(@Worker.SessionLogin)
+                           Logged as: @Context.Session.GetString(@SessionUser.SessionLogin)
                        </div>
                        @using(Html.BeginForm("Logout", "Home"))
                        {
