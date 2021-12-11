@@ -118,7 +118,7 @@ namespace TimeReporter.Controllers
                 return RedirectToAction("Index");
             }
 
-            _db.Remove(report.Entries[deleteIdx]);
+            _db.Remove(_reportRepository.GetDayEntries(selectedWorker, selectedDate)[deleteIdx]);
             _db.SaveChanges();
             TempData["Success"] = "Successfully deleted entry";
             TempData["selectedDate"] = selectedDate;
