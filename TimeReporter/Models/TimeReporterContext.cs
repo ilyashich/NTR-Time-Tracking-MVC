@@ -87,7 +87,7 @@ namespace TimeReporter.Models
 
             mb.Entity<AcceptedTime>().HasData(new AcceptedTime()
             {
-                AcceptedTimeId = 1, Time = 50, ReportId = 1, ActivityId = 1, WorkerId = 1
+                AcceptedTimeId = 1, Time = 50, ReportId = 1, ActivityId = 2, WorkerId = 1
             });
             mb.Entity<AcceptedTime>().HasData(new AcceptedTime()
             {
@@ -104,7 +104,7 @@ namespace TimeReporter.Models
             });
             mb.Entity<AcceptedTime>().HasData(new AcceptedTime()
             {
-                AcceptedTimeId = 5, Time = 150, ReportId = 4, ActivityId = 4, WorkerId = 4
+                AcceptedTimeId = 5, Time = 150, ReportId = 4, ActivityId = 8, WorkerId = 4
             });
             mb.Entity<AcceptedTime>().HasData(new AcceptedTime()
             {
@@ -143,7 +143,7 @@ namespace TimeReporter.Models
             mb.Entity<Entry>().HasData(new Entry()
             {
                 EntryId = 5, Date = DateTime.Today, WorkerId = 4, Time = 150, Description = "added column",
-                ActivityId = 5, ReportId = 4, SubactivityId = 5
+                ActivityId = 8, ReportId = 4, SubactivityId = 8
             });
             
             mb.Entity<Entry>().HasData(new Entry()

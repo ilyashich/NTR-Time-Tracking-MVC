@@ -38,17 +38,19 @@ namespace TimeReporter.Controllers
             Report report = _reportRepository.GetReport(selectedOption.SelectedWorker, selectedOption.SelectedDate);
 
 
-            List<Entry> entries = new List<Entry>();
+            selectedOption.Entries = new List<Entry>();
             
-            List<AcceptedTime> accepted = new List<AcceptedTime>();
+            ViewBag.accepted = new List<AcceptedTime>();
             List<string> managers = new List<string>();
             List<string> projects = new List<string>();
             List<int> projectSum = new List<int>();
+            ViewBag.isFrozen = true;
 
             if(report != null)
             {
-                entries = _reportRepository.GetDayEntries(selectedOption.SelectedWorker, selectedOption.SelectedDate);
-                accepted = report.Accepted;
+                ViewBag.accepted = report.Accepted;
+                ViewBag.isFrozen = report.Frozen;
+                selectedOption.Entries = _reportRepository.GetDayEntries(selectedOption.SelectedWorker, selectedOption.SelectedDate);
                 foreach (var accept in report.Accepted)
                 {
                     managers.Add(accept.Activity.Worker.Name);
@@ -62,13 +64,10 @@ namespace TimeReporter.Controllers
                 }
             }
 
-            ViewBag.accepted = accepted;
+            
             ViewBag.managers = managers;
             ViewBag.projects = projects;
             ViewBag.projectSum = projectSum;
-            
-
-            selectedOption.Entries = entries;
 
             return View(selectedOption);
         }

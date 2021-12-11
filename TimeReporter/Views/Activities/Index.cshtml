@@ -35,7 +35,14 @@
     {
         <div class="col">
             <input type="hidden" name="selectedDate" value=@Model.SelectedDate />
-            <button type="submit" class="btn btn-primary">Submit this month</button>
+            @if (!ViewBag.isFrozen)
+            {
+                <button type="submit" class="btn btn-primary">Submit this month</button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary" disabled="disabled">Submit this month</button>
+            }
         </div>
     }
     

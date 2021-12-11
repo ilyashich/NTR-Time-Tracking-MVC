@@ -19,8 +19,10 @@ namespace TimeReporter.Models.Repository
             if (!_db.Reports.Any()) return null;
             var reports = _db.Reports
                 .Include(report => report.Entries)
-                .Include(report => report.Accepted)
                 .Include(report => report.Worker)
+                .Include(report => report.Accepted)
+                .ThenInclude(accepted => accepted.Activity)
+                .ThenInclude(activity => activity.Worker)
                 .ToList();
             return reports.SingleOrDefault(r =>
                 r.WorkerId == worker.WorkerId && r.Date.Month == date.Month && r.Date.Year == date.Year);
@@ -42,7 +44,7 @@ namespace TimeReporter.Models.Repository
 
         public List<Entry> GetDayEntries(Worker worker, DateTime date)
         {
-            if (!_db.Reports.Any()) return new List<Entry>();
+            if (!_db.Entries.Any()) return new List<Entry>();
             var entries = _db.Entries
                 .Include(entry => entry.Activity)
                 .Include(entry => entry.Subactivity)
