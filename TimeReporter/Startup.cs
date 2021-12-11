@@ -30,7 +30,7 @@ namespace TimeReporter
             services.AddDistributedMemoryCache();
             
             services.AddDbContextPool<TimeReporterContext>(dbContextOptions =>
-                dbContextOptions.UseMySQL("server=localhost;port=3306;user=root;password=root;database=NTRTest"));
+                dbContextOptions.UseMySQL("server=localhost;port=3306;user=root;password=root;database=TimeReporter"));
 
 
             services.AddSession(options =>

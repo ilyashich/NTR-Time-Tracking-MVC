@@ -202,16 +202,16 @@ namespace TimeReporter.Migrations
                 columns: new[] { "ReportId", "Date", "Frozen", "WorkerId" },
                 values: new object[,]
                 {
-                    { 9, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), false, 9 },
-                    { 8, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), false, 8 },
-                    { 7, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), false, 7 },
-                    { 5, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), false, 5 },
-                    { 4, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), true, 4 },
-                    { 3, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), false, 3 },
-                    { 2, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), false, 2 },
-                    { 1, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), true, 1 },
-                    { 6, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), false, 6 },
-                    { 10, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), false, 10 }
+                    { 9, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), false, 9 },
+                    { 8, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), false, 8 },
+                    { 7, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), false, 7 },
+                    { 5, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), false, 5 },
+                    { 4, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), true, 4 },
+                    { 3, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), false, 3 },
+                    { 2, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), false, 2 },
+                    { 1, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), true, 1 },
+                    { 6, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), false, 6 },
+                    { 10, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), false, 10 }
                 });
 
             migrationBuilder.InsertData(
@@ -219,12 +219,12 @@ namespace TimeReporter.Migrations
                 columns: new[] { "AcceptedTimeId", "ActivityId", "ReportId", "Time", "WorkerId" },
                 values: new object[,]
                 {
-                    { 7, 5, 4, 160, 4 },
-                    { 1, 1, 1, 50, 1 },
+                    { 1, 2, 1, 50, 1 },
                     { 3, 3, 1, 25, 1 },
-                    { 6, 7, 4, 110, 4 },
+                    { 5, 8, 4, 150, 4 },
                     { 4, 2, 4, 100, 4 },
-                    { 5, 4, 4, 150, 4 },
+                    { 7, 5, 4, 160, 4 },
+                    { 6, 7, 4, 110, 4 },
                     { 2, 7, 1, 110, 1 }
                 });
 
@@ -233,15 +233,15 @@ namespace TimeReporter.Migrations
                 columns: new[] { "SubactivityId", "ActivityId", "Code" },
                 values: new object[,]
                 {
+                    { 1, 1, "database" },
                     { 8, 8, "database" },
                     { 7, 7, "" },
-                    { 6, 6, "database" },
-                    { 1, 1, "database" },
+                    { 5, 5, "database" },
                     { 9, 9, "database" },
                     { 4, 4, "database" },
                     { 3, 3, "database" },
                     { 2, 2, "database" },
-                    { 5, 5, "database" },
+                    { 6, 6, "database" },
                     { 10, 10, "database" }
                 });
 
@@ -250,14 +250,14 @@ namespace TimeReporter.Migrations
                 columns: new[] { "EntryId", "ActivityId", "Date", "Description", "ReportId", "SubactivityId", "Time", "WorkerId" },
                 values: new object[,]
                 {
-                    { 1, 2, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), "created table", 1, 2, 70, 1 },
-                    { 4, 2, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), "edited row", 4, 2, 70, 4 },
-                    { 3, 3, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), "added row", 1, 3, 30, 1 },
-                    { 8, 3, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), "created table", 8, 3, 70, 8 },
-                    { 5, 5, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), "added column", 4, 5, 150, 4 },
-                    { 7, 5, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), "created table", 4, 5, 30, 4 },
-                    { 2, 7, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), "tea time", 1, 7, 150, 1 },
-                    { 6, 7, new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local), "resting", 4, 7, 30, 4 }
+                    { 1, 2, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), "created table", 1, 2, 70, 1 },
+                    { 4, 2, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), "edited row", 4, 2, 70, 4 },
+                    { 3, 3, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), "added row", 1, 3, 30, 1 },
+                    { 8, 3, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), "created table", 8, 3, 70, 8 },
+                    { 7, 5, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), "created table", 4, 5, 30, 4 },
+                    { 2, 7, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), "tea time", 1, 7, 150, 1 },
+                    { 6, 7, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), "resting", 4, 7, 30, 4 },
+                    { 5, 8, new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local), "added column", 4, 8, 150, 4 }
                 });
 
             migrationBuilder.CreateIndex(

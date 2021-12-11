@@ -53,7 +53,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             AcceptedTimeId = 1,
-                            ActivityId = 1,
+                            ActivityId = 2,
                             ReportId = 1,
                             Time = 50,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -89,7 +89,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             AcceptedTimeId = 5,
-                            ActivityId = 4,
+                            ActivityId = 8,
                             ReportId = 4,
                             Time = 150,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -299,7 +299,7 @@ namespace TimeReporter.Migrations
                         {
                             EntryId = 1,
                             ActivityId = 2,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "created table",
                             ReportId = 1,
                             SubactivityId = 2,
@@ -311,7 +311,7 @@ namespace TimeReporter.Migrations
                         {
                             EntryId = 2,
                             ActivityId = 7,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "tea time",
                             ReportId = 1,
                             SubactivityId = 7,
@@ -323,7 +323,7 @@ namespace TimeReporter.Migrations
                         {
                             EntryId = 3,
                             ActivityId = 3,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "added row",
                             ReportId = 1,
                             SubactivityId = 3,
@@ -335,7 +335,7 @@ namespace TimeReporter.Migrations
                         {
                             EntryId = 4,
                             ActivityId = 2,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "edited row",
                             ReportId = 4,
                             SubactivityId = 2,
@@ -346,11 +346,11 @@ namespace TimeReporter.Migrations
                         new
                         {
                             EntryId = 5,
-                            ActivityId = 5,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            ActivityId = 8,
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "added column",
                             ReportId = 4,
-                            SubactivityId = 5,
+                            SubactivityId = 8,
                             Time = 150,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
@@ -359,7 +359,7 @@ namespace TimeReporter.Migrations
                         {
                             EntryId = 6,
                             ActivityId = 7,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "resting",
                             ReportId = 4,
                             SubactivityId = 7,
@@ -371,7 +371,7 @@ namespace TimeReporter.Migrations
                         {
                             EntryId = 7,
                             ActivityId = 5,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "created table",
                             ReportId = 4,
                             SubactivityId = 5,
@@ -383,7 +383,7 @@ namespace TimeReporter.Migrations
                         {
                             EntryId = 8,
                             ActivityId = 3,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "created table",
                             ReportId = 8,
                             SubactivityId = 3,
@@ -422,7 +422,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 1,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = true,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
@@ -430,7 +430,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 2,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 2
@@ -438,7 +438,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 3,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 3
@@ -446,7 +446,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 4,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = true,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
@@ -454,7 +454,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 5,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 5
@@ -462,7 +462,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 6,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 6
@@ -470,7 +470,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 7,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 7
@@ -478,7 +478,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 8,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 8
@@ -486,7 +486,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 9,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 9
@@ -494,7 +494,7 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 10,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
                             Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 10

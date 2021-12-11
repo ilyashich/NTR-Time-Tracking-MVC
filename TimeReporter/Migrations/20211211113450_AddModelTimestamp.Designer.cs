@@ -9,8 +9,8 @@ using TimeReporter.Models;
 namespace TimeReporter.Migrations
 {
     [DbContext(typeof(TimeReporterContext))]
-    [Migration("20211210171350_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20211211113450_AddModelTimestamp")]
+    partial class AddModelTimestamp
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,6 +34,10 @@ namespace TimeReporter.Migrations
                     b.Property<int>("Time")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime");
+
                     b.Property<int>("WorkerId")
                         .HasColumnType("int");
 
@@ -51,9 +55,10 @@ namespace TimeReporter.Migrations
                         new
                         {
                             AcceptedTimeId = 1,
-                            ActivityId = 1,
+                            ActivityId = 2,
                             ReportId = 1,
                             Time = 50,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
                         },
                         new
@@ -62,6 +67,7 @@ namespace TimeReporter.Migrations
                             ActivityId = 7,
                             ReportId = 1,
                             Time = 110,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
                         },
                         new
@@ -70,6 +76,7 @@ namespace TimeReporter.Migrations
                             ActivityId = 3,
                             ReportId = 1,
                             Time = 25,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
                         },
                         new
@@ -78,14 +85,16 @@ namespace TimeReporter.Migrations
                             ActivityId = 2,
                             ReportId = 4,
                             Time = 100,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
                         {
                             AcceptedTimeId = 5,
-                            ActivityId = 4,
+                            ActivityId = 8,
                             ReportId = 4,
                             Time = 150,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
@@ -94,6 +103,7 @@ namespace TimeReporter.Migrations
                             ActivityId = 7,
                             ReportId = 4,
                             Time = 110,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
@@ -102,6 +112,7 @@ namespace TimeReporter.Migrations
                             ActivityId = 5,
                             ReportId = 4,
                             Time = 160,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         });
                 });
@@ -126,6 +137,10 @@ namespace TimeReporter.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime");
+
                     b.Property<int>("WorkerId")
                         .HasColumnType("int");
 
@@ -143,6 +158,7 @@ namespace TimeReporter.Migrations
                             Budget = 115,
                             Code = "Mercury-1",
                             Name = "Mercury",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
                         },
                         new
@@ -152,6 +168,7 @@ namespace TimeReporter.Migrations
                             Budget = 50,
                             Code = "Jupiter-2",
                             Name = "Jupiter",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 2
                         },
                         new
@@ -161,6 +178,7 @@ namespace TimeReporter.Migrations
                             Budget = 100,
                             Code = "Pluto-1",
                             Name = "Pluto",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 3
                         },
                         new
@@ -170,6 +188,7 @@ namespace TimeReporter.Migrations
                             Budget = 100,
                             Code = "Saturn-5",
                             Name = "Saturn",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
@@ -179,6 +198,7 @@ namespace TimeReporter.Migrations
                             Budget = -10,
                             Code = "Venus-3",
                             Name = "Venus",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 5
                         },
                         new
@@ -188,6 +208,7 @@ namespace TimeReporter.Migrations
                             Budget = 70,
                             Code = "Uranus-2",
                             Name = "Uranus",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 6
                         },
                         new
@@ -197,6 +218,7 @@ namespace TimeReporter.Migrations
                             Budget = -1,
                             Code = "OTHER",
                             Name = "Other",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 7
                         },
                         new
@@ -206,6 +228,7 @@ namespace TimeReporter.Migrations
                             Budget = 150,
                             Code = "Neptune-7",
                             Name = "Neptune",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 8
                         },
                         new
@@ -215,6 +238,7 @@ namespace TimeReporter.Migrations
                             Budget = 150,
                             Code = "Luna-1",
                             Name = "Luna",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 9
                         },
                         new
@@ -224,6 +248,7 @@ namespace TimeReporter.Migrations
                             Budget = 300,
                             Code = "Europa-77",
                             Name = "Europa",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 10
                         });
                 });
@@ -252,6 +277,10 @@ namespace TimeReporter.Migrations
                     b.Property<int>("Time")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime");
+
                     b.Property<int>("WorkerId")
                         .HasColumnType("int");
 
@@ -272,88 +301,96 @@ namespace TimeReporter.Migrations
                         {
                             EntryId = 1,
                             ActivityId = 2,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "created table",
                             ReportId = 1,
                             SubactivityId = 2,
                             Time = 70,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
                         },
                         new
                         {
                             EntryId = 2,
                             ActivityId = 7,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "tea time",
                             ReportId = 1,
                             SubactivityId = 7,
                             Time = 150,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
                         },
                         new
                         {
                             EntryId = 3,
                             ActivityId = 3,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "added row",
                             ReportId = 1,
                             SubactivityId = 3,
                             Time = 30,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
                         },
                         new
                         {
                             EntryId = 4,
                             ActivityId = 2,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "edited row",
                             ReportId = 4,
                             SubactivityId = 2,
                             Time = 70,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
                         {
                             EntryId = 5,
-                            ActivityId = 5,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            ActivityId = 8,
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "added column",
                             ReportId = 4,
-                            SubactivityId = 5,
+                            SubactivityId = 8,
                             Time = 150,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
                         {
                             EntryId = 6,
                             ActivityId = 7,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "resting",
                             ReportId = 4,
                             SubactivityId = 7,
                             Time = 30,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
                         {
                             EntryId = 7,
                             ActivityId = 5,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "created table",
                             ReportId = 4,
                             SubactivityId = 5,
                             Time = 30,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
                         {
                             EntryId = 8,
                             ActivityId = 3,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Description = "created table",
                             ReportId = 8,
                             SubactivityId = 3,
                             Time = 70,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 8
                         });
                 });
@@ -370,6 +407,10 @@ namespace TimeReporter.Migrations
                     b.Property<bool>("Frozen")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime");
+
                     b.Property<int>("WorkerId")
                         .HasColumnType("int");
 
@@ -383,71 +424,81 @@ namespace TimeReporter.Migrations
                         new
                         {
                             ReportId = 1,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = true,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 1
                         },
                         new
                         {
                             ReportId = 2,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 2
                         },
                         new
                         {
                             ReportId = 3,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 3
                         },
                         new
                         {
                             ReportId = 4,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = true,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 4
                         },
                         new
                         {
                             ReportId = 5,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 5
                         },
                         new
                         {
                             ReportId = 6,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 6
                         },
                         new
                         {
                             ReportId = 7,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 7
                         },
                         new
                         {
                             ReportId = 8,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 8
                         },
                         new
                         {
                             ReportId = 9,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 9
                         },
                         new
                         {
                             ReportId = 10,
-                            Date = new DateTime(2021, 12, 10, 0, 0, 0, 0, DateTimeKind.Local),
+                            Date = new DateTime(2021, 12, 11, 0, 0, 0, 0, DateTimeKind.Local),
                             Frozen = false,
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             WorkerId = 10
                         });
                 });
@@ -465,6 +516,10 @@ namespace TimeReporter.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime");
+
                     b.HasKey("SubactivityId");
 
                     b.HasIndex("ActivityId");
@@ -476,61 +531,71 @@ namespace TimeReporter.Migrations
                         {
                             SubactivityId = 1,
                             ActivityId = 1,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 2,
                             ActivityId = 2,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 3,
                             ActivityId = 3,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 4,
                             ActivityId = 4,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 5,
                             ActivityId = 5,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 6,
                             ActivityId = 6,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 7,
                             ActivityId = 7,
-                            Code = ""
+                            Code = "",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 8,
                             ActivityId = 8,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 9,
                             ActivityId = 9,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             SubactivityId = 10,
                             ActivityId = 10,
-                            Code = "database"
+                            Code = "database",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
@@ -544,6 +609,10 @@ namespace TimeReporter.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime");
+
                     b.HasKey("WorkerId");
 
                     b.ToTable("Workers");
@@ -552,57 +621,68 @@ namespace TimeReporter.Migrations
                         new
                         {
                             WorkerId = 1,
-                            Name = "Clarkson"
+                            Name = "Clarkson",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 2,
-                            Name = "Hammond"
+                            Name = "Hammond",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 3,
-                            Name = "May"
+                            Name = "May",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 4,
-                            Name = "Plant"
+                            Name = "Plant",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 5,
-                            Name = "Page"
+                            Name = "Page",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 6,
-                            Name = "Bonham"
+                            Name = "Bonham",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 7,
-                            Name = "Jones"
+                            Name = "Jones",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 8,
-                            Name = "Hetfield"
+                            Name = "Hetfield",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 9,
-                            Name = "Hammett"
+                            Name = "Hammett",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 10,
-                            Name = "Ulrich"
+                            Name = "Ulrich",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             WorkerId = 11,
-                            Name = "Trujillo"
+                            Name = "Trujillo",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
