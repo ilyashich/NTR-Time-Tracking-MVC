@@ -1,3 +1,4 @@
+@using System.Text.Json
 @model ManageOption
 @{
     ViewBag.Title = "Manage panel";
@@ -166,7 +167,7 @@
                             @Model.SubmittedTime[i]
                         </td>
                         <td>
-                            @if (@Model.IsFrozen[i])
+                            @if (Model.IsFrozen[i])
                             {
                                 <div class="display-field">
                                     Yes
@@ -182,19 +183,21 @@
                         <td>
                             @using (Html.BeginForm("AcceptTime", "Manage", FormMethod.Post))
                             {
-                                @if (@Model.IsFrozen[i])
+                                if (Model.IsFrozen[i])
                                 {
-                                    @Html.TextBox("time", @Model.AcceptedTime[i], new {onchange = "show(this);", type = "number"})
+                                    @Html.TextBox("time", Model.AcceptedTime[i].Time, new {onchange = "show(this);", type = "number"})
             
                                     <input type="hidden" name="selectedMonth" value=@Model.SelectedMonth />
                                     <input type="hidden" name="selectedYear" value=@Model.SelectedYear />
                                     <input type="hidden" name="selectedProjectId" value=@Model.SelectedProjectId />
                                     <input type="hidden" name="workerId" value=@Model.ProjectWorkers[i].WorkerId />
+                                    <input type="hidden" name="oldTime" value=@Model.AcceptedTime[i].Time />
+                                    <input type="hidden" name="timestamp" value=@JsonSerializer.Serialize(Model.AcceptedTime[i].Timestamp) />
                                     <button type="submit" class="btn btn-outline-primary">Save</button>
                                 }
                                 else
                                 {
-                                    @Model.AcceptedTime[i]
+                                    @Model.AcceptedTime[i].Time
                                 }
                             }
                         </td>

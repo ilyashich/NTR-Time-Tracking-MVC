@@ -11,7 +11,9 @@ namespace TimeReporter.Models
             SelectedYear = DateTime.Now.Year;
             IsFrozen = new List<bool>();
             SubmittedTime = new List<int>();
-            AcceptedTime = new List<int>();
+            AcceptedTime = new List<AcceptedTime>();
+            ProjectWorkers = new List<Worker>();
+            Projects = new List<Activity>();
         }
 
         public int SelectedWorkerId { get; set; }
@@ -30,9 +32,7 @@ namespace TimeReporter.Models
         
         public List<int> SubmittedTime { get; set; }
 
-        public List<int> AcceptedTime { get; set; }
-        
-        public List<string> Surnames { get; set; }
+        public List<AcceptedTime> AcceptedTime { get; set; }
 
         public List<Activity> Projects { get; set; }
 

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -66,35 +68,26 @@ namespace TimeReporter.Controllers
                 var workers = _workerRepository.GetAllWorkers();
                 selectedOption.ProjectWorkers = workers.Where(worker =>
                         worker.Entries.Exists(entry => entry.ActivityId == selectedOption.SelectedProjectId))
-                    .Select(worker => worker).ToList();
+                    .ToList();
                 selectedOption.SelectedProjectBudget = activity.Budget;
                 selectedOption.IsSelectedProjectActive = activity.Active;
             }
-            else
-            {
-                selectedOption.ProjectWorkers = new List<Worker>();
-            }
-            
+
             foreach (var worker in selectedOption.ProjectWorkers)
             {
-                Report report = _reportRepository.GetReport(worker.WorkerId, selectedOption.SelectedMonth, selectedOption.SelectedYear);
-                if (report != null)
-                {
-                    selectedOption.IsFrozen.Add(report.Frozen);
-                    AcceptedTime accepted = _reportRepository.GetAccepted(report, selectedOption.SelectedProjectId);
-                    if (accepted != null)
-                    {
-                        selectedOption.AcceptedTime.Add(accepted.Time);
-                    }
-                    else
-                    {
-                        selectedOption.AcceptedTime.Add(0);
-                    }
+                Report report = worker.Reports
+                    .SingleOrDefault(report =>
+                    report.Date.Month == int.Parse(selectedOption.SelectedMonth) &&
+                    report.Date.Year == selectedOption.SelectedYear);
+                if (report == null) continue;
+                selectedOption.IsFrozen.Add(report.Frozen);
+                AcceptedTime accepted = _reportRepository.GetAccepted(report, selectedOption.SelectedProjectId);
+                selectedOption.AcceptedTime.Add(accepted ?? new AcceptedTime(){Time = 0});
 
-                    int timeSum = report.Entries.Where(entry => entry.ActivityId == selectedOption.SelectedProjectId)
-                        .Sum(entry => entry.Time);
-                    selectedOption.SubmittedTime.Add(timeSum);
-                }
+                int timeSum = report.Entries
+                    .Where(entry => entry.ActivityId == selectedOption.SelectedProjectId)
+                    .Sum(entry => entry.Time);
+                selectedOption.SubmittedTime.Add(timeSum);
             }
             return View(selectedOption);
         }
@@ -199,9 +192,26 @@ namespace TimeReporter.Controllers
         }
 
         [HttpPost]
-        public ActionResult AcceptTime(string selectedMonth, int selectedYear, int selectedProjectId, 
+        public ActionResult AcceptTime(string selectedMonth, int selectedYear, int selectedProjectId, string timestamp, 
              int workerId, int time)
         {
+            DateTime newTimestamp = JsonSerializer.Deserialize<DateTime>(timestamp);
+            
+            Report report = _reportRepository.GetReport(workerId, selectedMonth, selectedYear);
+            AcceptedTime acceptedTime = report.Accepted.SingleOrDefault(accepted => accepted.ActivityId == selectedProjectId);
+
+            if (acceptedTime != null)
+            {
+                if (DateTime.Compare(acceptedTime.Timestamp, newTimestamp) > 0)
+                {
+                    TempData["Alert"] = "Accepted time has already been modified. Try again.";
+                    TempData["selectedMonth"] = selectedMonth;
+                    TempData["selectedYear"] = selectedYear;
+                    TempData["selectedProjectId"] = selectedProjectId;
+                    return RedirectToAction("Index");
+                }
+            }
+
             if (IsProjectActive(selectedProjectId) > 0)
             {
                 TempData["Alert"] = "Can't accept because this project is closed";
@@ -211,8 +221,8 @@ namespace TimeReporter.Controllers
                 return RedirectToAction("Index");
             }
 
-            RecalculateBudget(workerId, selectedMonth, selectedYear, selectedProjectId, time);
-            AcceptWorker(workerId, selectedMonth, selectedYear, selectedProjectId, time);
+            RecalculateBudget(acceptedTime, selectedProjectId, time);
+            AcceptWorker(report, acceptedTime, workerId, selectedProjectId, time);
             
             TempData["Success"] = "Successfully accepted time";
             TempData["selectedMonth"] = selectedMonth;
@@ -221,12 +231,8 @@ namespace TimeReporter.Controllers
             return RedirectToAction("Index");
         }
 
-        private void RecalculateBudget(int workerId, string selectedMonth, int selectedYear, int selectedProjectId, int time)
+        private void RecalculateBudget(AcceptedTime acceptedTime, int selectedProjectId, int time)
         {
-            Report report = _reportRepository.GetReport(workerId, selectedMonth, selectedYear);
-            
-            AcceptedTime acceptedTime = report.Accepted.SingleOrDefault(accepted => accepted.ActivityId == selectedProjectId);
-
             int timeChange;
 
             if (acceptedTime != null)
@@ -248,10 +254,8 @@ namespace TimeReporter.Controllers
             _db.SaveChanges();
         }
 
-        private void AcceptWorker(int workerId, string selectedMonth, int selectedYear, int selectedProjectId, int time)
+        private void AcceptWorker(Report report, AcceptedTime acceptedTime, int workerId, int selectedProjectId, int time)
         {
-            Report report = _reportRepository.GetReport(workerId, selectedMonth, selectedYear);
-            AcceptedTime acceptedTime = report.Accepted.SingleOrDefault(accepted => accepted.ActivityId == selectedProjectId);
             if (acceptedTime != null)
             {
                 acceptedTime.Time = time;

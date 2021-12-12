@@ -23,6 +23,7 @@ namespace TimeReporter.Models.Repository
             if (!_db.Workers.Any()) return null;
             return _db.Workers
                 .Include(worker => worker.Entries)
+                .Include(worker => worker.Reports)
                 .ToList();
         }
     }
