@@ -64,8 +64,8 @@
 </div>
 <div class="row">
     <div style="margin-top: 10px" class="col-md-2">
-        <button href="" class="btn btn-primary" data-toggle="modal" data-target="#entryModal"
-                data-url='@(Url.Action("EntryModal", new {selectedSurname = Model.SelectedWorker, selectedDate = Model.SelectedDate, idx=-1}))'>
+        <button href="" class="btn btn-primary" data-toggle="modal" data-target="#addModal"
+                data-url='@(Url.Action("AddModal", new {selectedDate = Model.SelectedDate}))'>
             Add New Entry
         </button>
     </div>
@@ -140,8 +140,15 @@
             
             <div class="row">
                 <div class="col">
-                    <button href="" class="btn btn-primary" data-toggle="modal" data-target="#entryModal"
-                            data-url='@(Url.Action("EntryModal", new {selectedSurname = Model.SelectedWorker, selectedDate = Model.SelectedDate, idx = i}))'>
+                    <button href="" class="btn btn-primary" data-toggle="modal" data-target="#editModal"
+                            data-url='@(Url.Action("EditModal", new {
+                                          selectedDate = Model.SelectedDate,
+                                          entryId = Model.Entries[i].EntryId,
+                                          activityId = Model.Entries[i].Activity.ActivityId,
+                                          subcode = Model.Entries[i].Subactivity.Code,
+                                          time = Model.Entries[i].Time,
+                                          description = Model.Entries[i].Description,
+                                          timestamp = Model.Entries[i].Timestamp}))'>
                         Edit
                     </button>
                 </div>
@@ -150,7 +157,7 @@
                 {
                     <div class="col">
                         <input type="hidden" name="selectedDate" value=@Model.SelectedDate />
-                        <button type="submit" name="deleteIdx" value="@i" class="btn btn-primary">Delete</button>
+                        <button type="submit" name="entryId" value=@Model.Entries[i].EntryId class="btn btn-primary">Delete</button>
                     </div>
                 }
             </div>
@@ -159,7 +166,12 @@
 }
 
 <!-- Modal -->
-<div class="modal" id="entryModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel1"
+<div class="modal" id="addModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel1"
+     aria-hidden="true">
+</div>
+
+<!-- Modal -->
+<div class="modal" id="editModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel4"
      aria-hidden="true">
 </div>
 

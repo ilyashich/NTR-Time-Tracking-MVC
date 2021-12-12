@@ -11,15 +11,15 @@ namespace TimeReporter.Models.Repository
             _db = db;
         }
 
-        public void AddNewActivity(Activity activity)
+        public bool AddNewActivity(Activity activity)
         {
             Activity sameActivities = _db.Activities.SingleOrDefault(currentActivity => currentActivity.Code == activity.Code);
 
-            if (sameActivities == null)
-            {
-                _db.Activities.Add(activity);
-                _db.SaveChanges();
-            }
+            if (sameActivities != null) return false;
+            _db.Activities.Add(activity);
+            _db.SaveChanges();
+            return true;
+
         }
     }
 }

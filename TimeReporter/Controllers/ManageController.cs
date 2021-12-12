@@ -113,20 +113,29 @@ namespace TimeReporter.Controllers
             string code, string name, int budget)
         {
             Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
-            _activityRepository.AddNewActivity(
-                new Activity()
-                {
-                    Code = code,
-                    WorkerId = selectedWorker.WorkerId,
-                    Name = name,
-                    Budget = budget,
-                    Active = true
-                });
+            Activity newActivity = new Activity()
+            {
+                Code = code,
+                WorkerId = selectedWorker.WorkerId,
+                Name = name,
+                Budget = budget,
+                Active = true
+            };
 
+            if (_activityRepository.AddNewActivity(newActivity))
+            {
+                TempData["selectedMonth"] = selectedMonth;
+                TempData["selectedYear"] = selectedYear;
+                TempData["selectedProjectId"] = newActivity.ActivityId;
+                return RedirectToAction("Index");
+            }
+            
+            TempData["Alert"] = "Project with name " + code + " already exists!";
             TempData["selectedMonth"] = selectedMonth;
             TempData["selectedYear"] = selectedYear;
             TempData["selectedProjectId"] = selectedProjectId;
             return RedirectToAction("Index");
+            
         }
 
         [HttpPost]
@@ -159,9 +168,17 @@ namespace TimeReporter.Controllers
         [HttpPost]
         public ActionResult CloseProject(string selectedMonth, int selectedYear, int selectedProjectId)
         {
-            if (!IsProjectActive(selectedProjectId))
+            if (IsProjectActive(selectedProjectId) < 0)
             {
-                TempData["Alert"] = "This project is already closed or doesn't exist";
+                TempData["Alert"] = "This project doesn't exist";
+                TempData["selectedMonth"] = selectedMonth;
+                TempData["selectedYear"] = selectedYear;
+                TempData["selectedProjectId"] = selectedProjectId;
+                return RedirectToAction("Index");
+            }
+            if (IsProjectActive(selectedProjectId) > 0)
+            {
+                TempData["Alert"] = "This project is already closed";
                 TempData["selectedMonth"] = selectedMonth;
                 TempData["selectedYear"] = selectedYear;
                 TempData["selectedProjectId"] = selectedProjectId;
@@ -182,7 +199,7 @@ namespace TimeReporter.Controllers
         public ActionResult AcceptTime(string selectedMonth, int selectedYear, int selectedProjectId, 
              int workerId, int time)
         {
-            if (!IsProjectActive(selectedProjectId))
+            if (IsProjectActive(selectedProjectId) > 0)
             {
                 TempData["Alert"] = "Can't accept because this project is closed";
                 TempData["selectedMonth"] = selectedMonth;
@@ -252,10 +269,16 @@ namespace TimeReporter.Controllers
             _db.SaveChanges();
         }
 
-        private bool IsProjectActive(int selectedProjectId)
+        private int IsProjectActive(int selectedProjectId)
         {
             var selectedProject = _db.Activities.SingleOrDefault(activity => activity.ActivityId == selectedProjectId);
-            return selectedProject != null && selectedProject.Active;
+            if (selectedProject == null)
+                return -1;
+            return selectedProject.Active switch
+            {
+                true => 0,
+                false => 1
+            };
         }
     }
 }

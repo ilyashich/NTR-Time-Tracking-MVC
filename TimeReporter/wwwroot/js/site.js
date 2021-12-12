@@ -3,14 +3,21 @@
 
 // Write your JavaScript code.
 
-$('#entryModal').on('show.bs.modal', function (event) {
+$('#editModal').on('show.bs.modal', function (event) {
     var a = $(event.relatedTarget) // Button that triggered the modal
     var url = a.data('url');
 
     $.get(url, function (data) {
-        $('#entryModal').html(data);
+        $('#editModal').html(data).modal('show');
+    });
+})
 
-        $('#entryModal').modal('show');
+$('#addModal').on('show.bs.modal', function (event) {
+    var a = $(event.relatedTarget) // Button that triggered the modal
+    var url = a.data('url');
+
+    $.get(url, function (data) {
+        $('#addModal').html(data).modal('show');
     });
 })
 
@@ -19,8 +26,6 @@ $('#CreateProjectModal').on('show.bs.modal', function (event) {
     var url = a.data('url');
 
     $.get(url, function (data) {
-        $('#CreateProjectModal').html(data);
-
-        $('#CreateProjectModal').modal('show');
+        $('#CreateProjectModal').html(data).modal('show');
     });
 })

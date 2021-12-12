@@ -54,6 +54,19 @@ namespace TimeReporter.Models.Repository
             return entries.Where(e => e.WorkerId == worker.WorkerId && e.Date.Date == date.Date).ToList();
 
         }
+        
+        public Entry GetEntryById(int entryId)
+        {
+            if (!_db.Entries.Any()) return null;
+            var entries = _db.Entries
+                .Include(entry => entry.Activity)
+                .Include(entry => entry.Subactivity)
+                .Include(entry => entry.Worker)
+                .Include(entry => entry.Report)
+                .ToList();
+            return entries.SingleOrDefault(e => e.EntryId == entryId);
+
+        }
 
         public AcceptedTime GetAccepted(Report report, int activityId)
         {

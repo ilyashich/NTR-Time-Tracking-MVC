@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using SysActivity = System.Diagnostics.Activity;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TimeReporter.Models;
@@ -107,18 +110,40 @@ namespace TimeReporter.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete(DateTime selectedDate, int deleteIdx)
+        public ActionResult Delete(DateTime selectedDate, int entryId)
         { 
+            Entry entry = _reportRepository.GetEntryById(entryId);
+
+            if (entry == null)
+            {
+                TempData["Alert"] = "Can't delete because entry has been deleted";
+                TempData["selectedDate"] = selectedDate;
+                return RedirectToAction("Index");
+            }
+            
             Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
             Report report = _reportRepository.GetReport(selectedWorker, selectedDate);
-            if(report.Frozen ||  !IsProjectActive(selectedDate, deleteIdx))
+            
+            if(report.Frozen)
             {
-                TempData["Alert"] = "Month is frozen or project is not active";
+                TempData["Alert"] = "Month is frozen";
+                TempData["selectedDate"] = selectedDate;
+                return RedirectToAction("Index");
+            }
+            if(IsProjectActive(entry.ActivityId) > 0)
+            {
+                TempData["Alert"] = "Project is not active";
+                TempData["selectedDate"] = selectedDate;
+                return RedirectToAction("Index");
+            }
+            if(IsProjectActive(entry.ActivityId) < 0)
+            {
+                TempData["Alert"] = "Project doesn't exist";
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
 
-            _db.Remove(_reportRepository.GetDayEntries(selectedWorker, selectedDate)[deleteIdx]);
+            _db.Remove(entry);
             _db.SaveChanges();
             TempData["Success"] = "Successfully deleted entry";
             TempData["selectedDate"] = selectedDate;
@@ -126,27 +151,26 @@ namespace TimeReporter.Controllers
         }
 
         [HttpGet]
-        public ActionResult EntryModal(DateTime selectedDate, int idx)
+        public ActionResult AddModal(DateTime selectedDate)
         {
             Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
 
-            Entry entry = idx >= 0 ? _reportRepository.GetDayEntries(selectedWorker, selectedDate)[idx] : new Entry();
+            Entry entry = new Entry();
 
             ViewBag.selectedSurname = selectedWorker.Name;
             ViewBag.selectedDate = selectedDate;
-            ViewBag.idx = idx;
-            ViewBag.codes = _db.Activities.Select(activity => activity.Code).ToList();
+            ViewBag.codes = _db.Activities.ToList();
 
             return PartialView(entry);
         }
-
+        
         [HttpPost]
-        public ActionResult ModalAction(DateTime selectedDate, int idx,
-            string code, string subcode, int time, string description)
+        public ActionResult AddEntry(DateTime selectedDate,
+            int activityId, string subcode, int time, string description)
         {
             Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
             if (_reportRepository.GetReport(selectedWorker, selectedDate) == null
-                && IsProjectActive(code)
+                && IsProjectActive(activityId) == 0
                 && selectedDate.Month == DateTime.Now.Month
                 && selectedDate.Year == DateTime.Now.Year)
             {
@@ -160,9 +184,16 @@ namespace TimeReporter.Controllers
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
-            else if (!IsProjectActive(code))
+            else if (IsProjectActive(activityId) > 0)
             {
-                TempData["Alert"] = "Project " + code + " is not active";
+                TempData["Alert"] = "Cannot add because project is not active";
+                TempData["selectedDate"] = selectedDate;
+                return RedirectToAction("Index");
+                
+            }
+            else if (IsProjectActive(activityId) < 0)
+            {
+                TempData["Alert"] = "Cannot add because project doesn't exist";
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
                 
@@ -176,46 +207,120 @@ namespace TimeReporter.Controllers
                 TempData["selectedDate"] = selectedDate;
                 return RedirectToAction("Index");
             }
-
-            int activityId = _db.Activities.Where(activity => activity.Code == code)
-                                        .Select(activity => activity.ActivityId).Single();
-            int subactivityId = _db.Subactivities.Where(subactivity => subactivity.ActivityId == activityId 
-                                                                    && subactivity.Code == subcode)
-                                                .Select(subactivity => subactivity.SubactivityId)
-                                                .SingleOrDefault();
-            if (subactivityId == 0)
+            
+            var subactivity = _db.Subactivities
+                .SingleOrDefault(subactivity => subactivity.ActivityId == activityId && subactivity.Code == subcode);
+            int subactivityId;
+            if (subactivity == null)
             {
                 var newSubactivity = new Subactivity() {Code = subcode, ActivityId = activityId};
                 _db.Subactivities.Add(newSubactivity);
                 _db.SaveChanges();
                 subactivityId = newSubactivity.SubactivityId;
             }
-
-
-
-            if(idx == -1)
+            else
             {
-                Entry newEntry = new Entry()
-                {
-                    Date = selectedDate,
-                    ActivityId = activityId,
-                    SubactivityId = subactivityId,
-                    Time = time,
-                    Description = description,
-                    WorkerId = selectedWorker.WorkerId,
-                    ReportId = report.ReportId
-                };
+                subactivityId = subactivity.SubactivityId;
+            }
+
+            Entry newEntry = new Entry()
+            {
+                Date = selectedDate,
+                ActivityId = activityId,
+                SubactivityId = subactivityId,
+                Time = time,
+                Description = description,
+                WorkerId = selectedWorker.WorkerId,
+                ReportId = report.ReportId
+            };
+            
+            _db.Entries.Add(newEntry);
+            _db.SaveChanges();
+            
+            TempData["selectedDate"] = selectedDate;
+            return RedirectToAction("Index");
+        }
+        
+        [HttpGet]
+        public ActionResult EditModal(DateTime selectedDate, 
+            int entryId, int activityId, string subcode, int time, string description, DateTime timestamp)
+        {
+            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
+
+            TempData["activityId"] = activityId;
+            TempData["subcode"] = subcode;
+            TempData["time"] = time;
+            TempData["description"] = description;
+            
+            ViewBag.selectedSurname = selectedWorker.Name;
+            ViewBag.selectedDate = selectedDate;
+            ViewBag.entryId = entryId;
+            ViewBag.timestamp = timestamp;
+            ViewBag.codes = _db.Activities.ToList();
+
+            return PartialView();
+        }
+
+        [HttpPost]
+        public ActionResult EditEntry(DateTime selectedDate, int entryId, string timestamp,
+            int activityId, string subcode, int time, string description)
+        {
+            Entry entry = _reportRepository.GetEntryById(entryId);
+
+            if (entry == null)
+            {
+                TempData["Alert"] = "Can't edit because entry has been deleted";
+                TempData["selectedDate"] = selectedDate;
+                return RedirectToAction("Index");
+            }
+
+            DateTime newTimestamp = JsonSerializer.Deserialize<DateTime>(timestamp);
+
+            if (DateTime.Compare(entry.Timestamp, newTimestamp) > 0)
+            {
+                TempData["Alert"] = "Can't edit because entry was already modified. Try again.";
+                TempData["selectedDate"] = selectedDate;
+                return RedirectToAction("Index");
+            }
+            
+            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
+            if (IsProjectActive(activityId) > 0)
+            {
+                TempData["Alert"] = "Cannot edit because project is not active";
+                TempData["selectedDate"] = selectedDate;
+                return RedirectToAction("Index");
                 
-                _db.Entries.Add(newEntry);
+            }
+            
+            Report report = _reportRepository.GetReport(selectedWorker, selectedDate);
+
+            if(report.Frozen)
+            {
+                TempData["Alert"] = "Month is frozen";
+                TempData["selectedDate"] = selectedDate;
+                return RedirectToAction("Index");
+            }
+            
+            var subactivity = _db.Subactivities
+                .SingleOrDefault(subactivity => subactivity.ActivityId == activityId && subactivity.Code == subcode);
+            int subactivityId;
+            if (subactivity == null)
+            {
+                var newSubactivity = new Subactivity() {Code = subcode, ActivityId = activityId};
+                _db.Subactivities.Add(newSubactivity);
+                _db.SaveChanges();
+                subactivityId = newSubactivity.SubactivityId;
             }
             else
             {
-                var editEntry = _reportRepository.GetDayEntries(selectedWorker, selectedDate)[idx];
-                editEntry.ActivityId = activityId;
-                editEntry.SubactivityId = subactivityId;
-                editEntry.Time = time;
-                editEntry.Description = description;
+                subactivityId = subactivity.SubactivityId;
             }
+            
+            var editEntry = _db.Entries.Single(entry => entry.EntryId == entryId);
+            editEntry.ActivityId = activityId;
+            editEntry.SubactivityId = subactivityId;
+            editEntry.Time = time;
+            editEntry.Description = description;
 
             _db.SaveChanges();
             
@@ -223,17 +328,16 @@ namespace TimeReporter.Controllers
             return RedirectToAction("Index");
         }
 
-        private bool IsProjectActive(DateTime selectedDate, int idx)
+        private int IsProjectActive(int activityId)
         {
-            Worker selectedWorker = SessionUser.GetSessionUser(_httpContextAccessor, _db);
-            Activity activity = _reportRepository.GetDayEntries(selectedWorker, selectedDate)[idx].Activity;
-            return activity != null && activity.Active;
-        }
-
-        private bool IsProjectActive(string code)
-        {
-            Activity activity = _db.Activities.SingleOrDefault(activity1 => activity1.Code == code);
-            return activity != null && activity.Active;
+            Activity activity = _db.Activities.SingleOrDefault(activity1 => activity1.ActivityId == activityId);
+            if (activity == null)
+                return -1;
+            return activity.Active switch
+            {
+                true => 0,
+                false => 1
+            };
         }
     }
 }

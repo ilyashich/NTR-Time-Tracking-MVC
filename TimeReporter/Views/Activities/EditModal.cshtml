@@ -1,0 +1,99 @@
+@using System.Text.Json
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit entry</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        @using (Html.BeginForm("EditEntry", "Activities", FormMethod.Post))
+        {
+            <div class="modal-body">
+                <div class="form-group row">
+                    <label for="code" class="col-sm-2 col-form-label">Code</label>
+                        <div class="col-sm-10">
+
+                            <select name="activityId">
+
+                                @foreach (var code in ViewBag.codes)
+                                { 
+                                    @if (code.ActivityId == (int)TempData["activityId"])
+                                    {
+                                        <option value=@code.ActivityId selected>@code.Code</option>
+                                    }
+                                    else
+                                    {
+                                        <option value=@code.ActivityId>@code.Code</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="subcode" class="col-sm-2 col-form-label">Subcode</label>
+                        <div class="col-sm-10">
+                            @Html.TextBox("subcode", (string)TempData["subcode"],  new { onchange = "show(this);"})
+                        </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="time" class="col-sm-2 col-form-label">Time</label>
+                        <div class="col-sm-10">
+                            @Html.TextBox("time", (int)TempData["time"], new { onchange = "show(this);"})
+                        </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="description" class="col-sm-2 col-form-label">Description</label>
+                        <div class="col-sm-10">
+                            @Html.TextBox("description", (string)TempData["description"],  new { onchange = "show(this);"})
+                        </div>
+                </div>
+
+            </div>
+            
+            <input type="hidden" name="selectedDate" value=@ViewBag.selectedDate />
+            <input type="hidden" name="entryId" value=@ViewBag.entryId />
+            <input type="hidden" name="timestamp" value=@JsonSerializer.Serialize(ViewBag.timestamp) />
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <input type="submit" name="saveButton1" id="saveButton1" value="Save" class="btn btn-primary" disabled="disabled">
+            </div>
+        }
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $('form').submit(function(e) {
+        $(':disabled').each(function(e) {
+            $(this).removeAttr('disabled');
+        })
+    });
+
+    (function() {
+        $('select').change(function() {
+
+            var empty = false;
+            $('select').each(function() {
+                if ($(this).val().startsWith('Select')) {
+                    empty = true;
+                }
+            });
+
+            if (empty) {
+                $('#saveButton1').attr('disabled', 'disabled');
+            } else {
+                $('#saveButton1').removeAttr('disabled');
+            }
+        });
+    })()
+    function show(input){
+        $('#saveButton1').removeAttr('disabled');
+    }
+</script>
