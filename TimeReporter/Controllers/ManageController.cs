@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ namespace TimeReporter.Controllers
 
         private readonly ReportRepository _reportRepository;
         private readonly ActivityRepository _activityRepository;
+        private readonly WorkerRepository _workerRepository;
 
         public ManageController(TimeReporterContext context, IHttpContextAccessor httpContextAccessor)
         {
@@ -23,6 +25,7 @@ namespace TimeReporter.Controllers
             _db = context;
             _reportRepository = new ReportRepository(_db);
             _activityRepository = new ActivityRepository(_db);
+            _workerRepository = new WorkerRepository(_db);
         }
         // GET
         public IActionResult Index()
@@ -60,12 +63,12 @@ namespace TimeReporter.Controllers
 
             if (activity != null)
             {
-                var workers = _db.Workers.Include(worker => worker.Entries).ToList();
+                var workers = _workerRepository.GetAllWorkers();
                 selectedOption.ProjectWorkers = workers.Where(worker =>
                         worker.Entries.Exists(entry => entry.ActivityId == selectedOption.SelectedProjectId))
                     .Select(worker => worker).ToList();
-                ViewBag.budget = activity.Budget;
-                ViewBag.isActive = activity.Active;
+                selectedOption.SelectedProjectBudget = activity.Budget;
+                selectedOption.IsSelectedProjectActive = activity.Active;
             }
             else
             {

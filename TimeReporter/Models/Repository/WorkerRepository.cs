@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace TimeReporter.Models.Repository
 {
@@ -13,7 +15,15 @@ namespace TimeReporter.Models.Repository
 
         public Worker GetWorkerByLogin(string login)
         {
-            return _db.Workers.Single(worker => worker.Name == login);
+            return !_db.Workers.Any() ? null : _db.Workers.Single(worker => worker.Name == login);
+        }
+
+        public List<Worker> GetAllWorkers()
+        {
+            if (!_db.Workers.Any()) return null;
+            return _db.Workers
+                .Include(worker => worker.Entries)
+                .ToList();
         }
     }
 }

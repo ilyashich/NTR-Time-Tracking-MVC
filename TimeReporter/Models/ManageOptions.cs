@@ -23,7 +23,11 @@ namespace TimeReporter.Models
         public int SelectedYear { get; set; }
         
         public List<bool> IsFrozen { get; set; }
+        
+        public int? SelectedProjectBudget { get; set; }
 
+        public bool IsSelectedProjectActive { get; set; }
+        
         public List<int> SubmittedTime { get; set; }
 
         public List<int> AcceptedTime { get; set; }

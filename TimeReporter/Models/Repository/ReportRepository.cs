@@ -75,6 +75,17 @@ namespace TimeReporter.Models.Repository
                       && accepted.Activity.ActivityId == activityId
                 select accepted).SingleOrDefault();
         }
+        
+        public List<AcceptedTime> GetAccepted(int activityId)
+        {
+            if (!_db.Accepted.Any()) return null;
+            var accepted = _db.Accepted
+                .Include(accept => accept.Worker)
+                .Include(accept => accept.Report)
+                .ThenInclude(report => report.Entries)
+                .ToList();
+            return accepted.Where(accept => accept.ActivityId == activityId).ToList();
+        }
 
 
     }

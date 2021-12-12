@@ -37,7 +37,7 @@
                     {
                         @foreach (var project in Model.Projects)
                         {
-                            @if (ViewBag.isActive)
+                            @if (Model.IsSelectedProjectActive)
                             {
                                 @if (project.ActivityId == Model.SelectedProjectId)
                                 {
@@ -113,7 +113,14 @@
                 <input type="hidden" name="selectedMonth" value=@Model.SelectedMonth />
                 <input type="hidden" name="selectedYear" value=@Model.SelectedYear />
                 <input type="hidden" name="selectedProjectId" value=@Model.SelectedProjectId />
-                <button type="submit" class="btn btn-secondary">Close This Project</button>
+                @if (Model.IsSelectedProjectActive && Model.SelectedProjectId > 0)
+                {
+                    <button type="submit" class="btn btn-secondary">Close This Project</button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-secondary" disabled="disabled">Close This Project</button>
+                }
             </div>
         }
     </div>
@@ -194,10 +201,10 @@
                     </tr>
                 }
             </table>
-            @if (ViewBag.budget != null)
+            @if (Model.SelectedProjectBudget != null)
             {
                 <h4>
-                    Project budget: @ViewBag.budget
+                    Project budget: @Model.SelectedProjectBudget
                 </h4>
             }
         </fieldset>
