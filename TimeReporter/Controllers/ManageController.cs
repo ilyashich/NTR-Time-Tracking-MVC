@@ -120,9 +120,7 @@ namespace TimeReporter.Controllers
                     WorkerId = selectedWorker.WorkerId,
                     Name = name,
                     Budget = budget,
-                    Active = true,
-                    Subactivities = new List<Subactivity>(),
-                    Entries = new List<Entry>()
+                    Active = true
                 });
 
             TempData["selectedMonth"] = selectedMonth;
