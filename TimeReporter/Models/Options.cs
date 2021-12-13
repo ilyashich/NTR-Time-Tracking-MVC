@@ -16,5 +16,7 @@ namespace TimeReporter.Models
         public DateTime SelectedDate { get; set; }
         public List<string> Surnames { get; set; }
         public List<Entry> Entries { get; set; }
+
+        public List<Entry> AllMonthEntries { get; set; }
     }
 }

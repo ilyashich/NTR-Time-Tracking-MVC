@@ -15,7 +15,7 @@ namespace TimeReporter.Models.Repository
 
         public Worker GetWorkerByLogin(string login)
         {
-            return !_db.Workers.Any() ? null : _db.Workers.Single(worker => worker.Name == login);
+            return !_db.Workers.Any() || login == null ? null : _db.Workers.Single(worker => worker.Name == login);
         }
 
         public List<Worker> GetAllWorkers()

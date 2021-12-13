@@ -177,7 +177,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel2" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="ModalLabel">Your @Model.SelectedDate.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture) @Model.SelectedDate.Year Projects Summary</h5>
@@ -186,6 +186,47 @@
                 </button>
             </div>
             <div class="modal-body">
+                <h5 class="text-center">All Month Entries</h5>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Code</th>
+                        <th scope="col">Subcode</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                    </thead>
+                    @for (int i = 0; i < Model.AllMonthEntries.Count; ++i)
+                    {
+                        <tbody>
+                        <tr>
+                            <th scope="row">
+                                @(i + 1)
+                            </th>
+                            <td>
+                                @Model.AllMonthEntries[i].Date.ToString("yyyy-MM-dd")
+                            </td>
+                            <td>
+                                @Model.AllMonthEntries[i].Activity.Code
+                            </td>
+                            <td>
+                                @Model.AllMonthEntries[i].Subactivity.Code
+                            </td>
+                            <td>
+                                @Model.AllMonthEntries[i].Time
+                            </td>
+                            <td>
+                                @Model.AllMonthEntries[i].Description
+                            </td>
+
+                        </tr>
+                        </tbody>
+                    }
+                </table>
+
+                <h5 class="text-center">Project time summary</h5>
                 <table class="table table-bordered table-hover">
                     <thead>
                     <tr>

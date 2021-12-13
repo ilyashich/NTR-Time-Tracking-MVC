@@ -53,6 +53,7 @@ namespace TimeReporter.Controllers
             {
                 ViewBag.accepted = report.Accepted;
                 ViewBag.isFrozen = report.Frozen;
+                selectedOption.AllMonthEntries = report.Entries;
                 selectedOption.Entries = _reportRepository.GetDayEntries(selectedOption.SelectedWorker, selectedOption.SelectedDate);
                 foreach (var accept in report.Accepted)
                 {
@@ -316,7 +317,7 @@ namespace TimeReporter.Controllers
                 subactivityId = subactivity.SubactivityId;
             }
             
-            var editEntry = _db.Entries.Single(entry => entry.EntryId == entryId);
+            var editEntry = _db.Entries.Single(currentEntry => currentEntry.EntryId == entryId);
             editEntry.ActivityId = activityId;
             editEntry.SubactivityId = subactivityId;
             editEntry.Time = time;
