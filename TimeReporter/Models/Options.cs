@@ -8,7 +8,8 @@ namespace TimeReporter.Models
     {
         public Option()
         {
-            SelectedDate = DateTime.Now; 
+            SelectedDate = DateTime.Now;
+            AllMonthEntries = new List<Entry>();
         }
         public Worker SelectedWorker { get; set; }
         
